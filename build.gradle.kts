@@ -13,12 +13,28 @@ bukkit {
     version = rootProject.version.toString()
     main = "dev.racci.elixir.core.Elixir"
     load = net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.STARTUP
-    depend = listOf(
-        "Minix",
-    )
+    depend = listOf("Minix")
     softDepend = listOf(
         "PlaceholderAPI",
         "Lands",
+        "ProtocolLib"
     )
     website = "https://elixir.racci.dev/"
+}
+
+dependencies {
+    implementation(project(":Elixir-Core"))
+}
+
+subprojects {
+    apply(plugin = "dev.racci.minix.kotlin")
+    apply(plugin = "dev.racci.minix.purpurmc")
+
+    dependencies {
+        compileOnly(rootProject.libs.bundles.kotlin)
+        compileOnly(rootProject.libs.bundles.kotlinx)
+        compileOnly(rootProject.libs.adventure.kotlin)
+        compileOnly(rootProject.libs.koin.core)
+        compileOnly(rootProject.libs.minecraft.api.landsAPI)
+    }
 }

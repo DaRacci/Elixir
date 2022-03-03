@@ -1,0 +1,12 @@
+{
+  "modules": {
+    "torchFire": {
+      "enabled": true,
+      "ticks": 100
+    },
+    "drownConcrete": {
+      "enabled": true
+    }
+  },
+  "version": 2
+}
