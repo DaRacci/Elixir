@@ -13,7 +13,7 @@ import net.kyori.adventure.sound.Sound
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import org.bukkit.Effect
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftItem
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftItem
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockFadeEvent

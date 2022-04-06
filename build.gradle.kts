@@ -22,8 +22,24 @@ bukkit {
     website = "https://elixir.racci.dev/"
 }
 
+val lib: Configuration by configurations.creating
+extensions.getByType<SourceSetContainer>().named(SourceSet.MAIN_SOURCE_SET_NAME) {
+    configurations.getByName(compileClasspathConfigurationName).extendsFrom(lib)
+    configurations.getByName(runtimeClasspathConfigurationName).extendsFrom(lib)
+    configurations.getByName(apiElementsConfigurationName).extendsFrom(lib)
+}
+
 dependencies {
     implementation(project(":Elixir-Core"))
+    lib(libs.kotlinx.serialization.json)
+}
+
+tasks {
+    shadowJar {
+        dependencyFilter.include {
+            it.moduleGroup == "dev.racci"
+        }
+    }
 }
 
 subprojects {
