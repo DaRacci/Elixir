@@ -19,9 +19,6 @@ bukkit {
         "Lands",
         "ProtocolLib"
     )
-    libraries = listOf(
-        libs.kotlinx.serialization.json.get().toString()
-    )
     website = "https://elixir.racci.dev/"
 }
 
