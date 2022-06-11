@@ -2,7 +2,7 @@ plugins {
     id("dev.racci.minix.kotlin")
     id("dev.racci.minix.copyjar")
     id("dev.racci.minix.purpurmc")
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
+    id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
 }
 
 bukkit {
