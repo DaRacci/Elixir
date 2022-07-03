@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation(project(":Elixir-API"))
-    compileOnly("dev.racci:Minix:2.6.2")
+    compileOnly("dev.racci:Minix:2.11.0")
     compileOnly(rootProject.libs.minecraft.api.protoclLib)
     compileOnly(rootProject.libs.caffeine)
     compileOnly(rootProject.libs.kotlinx.serialization.json)
