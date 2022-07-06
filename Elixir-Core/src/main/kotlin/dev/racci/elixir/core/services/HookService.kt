@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.LoadingCache
 import dev.racci.elixir.core.Elixir
+import dev.racci.minix.api.annotations.MappedExtension
 import dev.racci.minix.api.extension.Extension
 import dev.racci.minix.api.extensions.event
 import dev.racci.minix.api.extensions.pm
@@ -21,9 +22,8 @@ import kotlin.reflect.KClass
 
 typealias HookInvoker = () -> HookService.HookService<*>
 
+@MappedExtension(Elixir::class, "Hook Service")
 class HookService(override val plugin: Elixir) : Extension<Elixir>() {
-
-    override val name = "Hook Service"
 
     private val loadedHooks by lazy { mutableMapOf<KClass<out Plugin>, HookService<*>>() }
     private val unloadedHooks by lazy { mutableMapOf<KClass<out Plugin>, HookService<*>>() }
@@ -95,7 +95,7 @@ class HookService(override val plugin: Elixir) : Extension<Elixir>() {
         hooks.invalidate(hook::class)
     }
 
-    interface HookService <T> : KoinComponent {
+    interface HookService<T> : KoinComponent {
 
         var manager: T?
         val plugin get() = get<Elixir>()

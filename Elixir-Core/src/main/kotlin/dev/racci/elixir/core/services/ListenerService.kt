@@ -2,6 +2,7 @@ package dev.racci.elixir.core.services
 
 import com.destroystokyo.paper.MaterialTags
 import dev.racci.elixir.core.Elixir
+import dev.racci.minix.api.annotations.MappedExtension
 import dev.racci.minix.api.extension.Extension
 import dev.racci.minix.api.extensions.cancel
 import dev.racci.minix.api.extensions.event
@@ -21,13 +22,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.koin.core.component.inject
 
+@MappedExtension(Elixir::class, "Listener Service", [StorageService::class, HookService::class])
 class ListenerService(override val plugin: Elixir) : Extension<Elixir>() {
     private val hookService by inject<HookService>()
     private val storageService by inject<StorageService>()
-
-    override val name = "Listener Service"
-
-    override val dependencies = persistentListOf(HookService::class, StorageService::class)
 
     override suspend fun handleEnable() {
         if (storageService["modules.drownConcrete.enabled"]) {

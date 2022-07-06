@@ -1,7 +1,6 @@
 package dev.racci.elixir.core
 
 import dev.racci.elixir.core.services.HookService
-import dev.racci.elixir.core.services.ListenerService
 import dev.racci.elixir.core.services.StorageService
 import dev.racci.minix.api.plugin.MinixPlugin
 import me.angeschossen.lands.api.exceptions.FlagConflictException
@@ -18,19 +17,12 @@ class Elixir : MinixPlugin() {
     lateinit var landsHook: LandsHook
 
     override suspend fun handleLoad() {
-        if (!dataFolder.exists()) {
-            dataFolder.mkdir()
-        }
-        logger.level = Level.ALL
+        if (description.version.endsWith("-SNAPSHOT")) logger.level = Level.ALL
         landsHook = LandsHook()
     }
 
-    override suspend fun handleEnable() {
-        extensions {
-            add(::HookService)
-            add(::ListenerService)
-            add(::StorageService)
-        }
+    override suspend fun handleAfterLoad() {
+        if (logger.level != Level.ALL && StorageService.getService()["debug"]) logger.level = Level.ALL
     }
 
     interface ILandsHook : HookService.HookService<LandsIntegration> {

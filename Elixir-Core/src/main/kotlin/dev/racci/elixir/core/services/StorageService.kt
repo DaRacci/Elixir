@@ -1,6 +1,7 @@
 package dev.racci.elixir.core.services
 
 import dev.racci.elixir.core.Elixir
+import dev.racci.minix.api.annotations.MappedExtension
 import dev.racci.minix.api.extension.Extension
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,9 +15,9 @@ import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.serializer
 import kotlin.properties.Delegates
 
+@MappedExtension(Elixir::class, "Storage Service")
 @OptIn(ExperimentalSerializationApi::class)
 class StorageService(override val plugin: Elixir) : Extension<Elixir>() {
-    override val name = "Storage Service"
 
     private val file by lazy { plugin.dataFolder.resolve("config.json") }
     private val json by lazy {
@@ -36,11 +37,12 @@ class StorageService(override val plugin: Elixir) : Extension<Elixir>() {
 
     var config by Delegates.notNull<Config>(); private set
 
-    override suspend fun handleEnable() {
+    override suspend fun handleLoad() {
         val defaultInput = plugin.getResource("Config.json")!!
         if (!file.exists()) {
             log.debug { "Creating new lang file." }
             withContext(Dispatchers.IO) {
+                file.parentFile.mkdirs()
                 file.createNewFile()
                 file.outputStream().use(defaultInput::copyTo)
                 config = json.decodeFromString(defaultInput.readAllBytes().decodeToString())
@@ -48,8 +50,10 @@ class StorageService(override val plugin: Elixir) : Extension<Elixir>() {
             }
             return
         }
+
         val defaultConfig = json.decodeFromString<Config>(defaultInput.readAllBytes().decodeToString())
         val presentConfig = file.inputStream().use { json.decodeFromString<Config>(it.readAllBytes().decodeToString()) }
+
         config = if (presentConfig.version != defaultConfig.version) {
             log.info { "Lang file is outdated. Updating from ${presentConfig.version} to ${defaultConfig.version}." }
             for ((key, value) in presentConfig.modules.entries) {
@@ -69,7 +73,7 @@ class StorageService(override val plugin: Elixir) : Extension<Elixir>() {
     @Serializable
     data class Config(
         val modules: MutableMap<String, MutableMap<String, String>>,
-        val version: Int,
+        val version: Int
     ) {
         val valueMap by lazy {
             val map = mutableMapOf<String, String>()
@@ -104,4 +108,6 @@ class StorageService(override val plugin: Elixir) : Extension<Elixir>() {
                 else -> false
             }
     }
+
+    companion object : ExtensionCompanion<StorageService>()
 }
