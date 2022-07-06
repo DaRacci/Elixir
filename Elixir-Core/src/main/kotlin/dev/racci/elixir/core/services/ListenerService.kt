@@ -13,7 +13,7 @@ import net.kyori.adventure.sound.Sound
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import org.bukkit.Effect
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftItem
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftItem
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockFadeEvent
@@ -30,7 +30,6 @@ class ListenerService(override val plugin: Elixir) : Extension<Elixir>() {
     override val dependencies = persistentListOf(HookService::class, StorageService::class)
 
     override suspend fun handleEnable() {
-
         if (storageService["modules.drownConcrete.enabled"]) {
             event<PlayerDropItemEvent>(priority = EventPriority.HIGH, ignoreCancelled = true, forceAsync = true) {
                 if (!MaterialTags.CONCRETE_POWDER.isTagged(itemDrop.itemStack)) return@event
@@ -50,9 +49,13 @@ class ListenerService(override val plugin: Elixir) : Extension<Elixir>() {
                         player.playSound(
                             Sound.sound(
                                 Key.key("block.lava.extinguish"),
-                                Sound.Source.NEUTRAL, 0.7f, 0.8f
+                                Sound.Source.NEUTRAL,
+                                0.7f,
+                                0.8f
                             ),
-                            itemDrop.location.x, itemDrop.location.y, itemDrop.location.z
+                            itemDrop.location.x,
+                            itemDrop.location.y,
+                            itemDrop.location.z
                         )
                         player.playEffect(itemDrop.location, Effect.COPPER_WAX_ON, null)
                         break
@@ -79,7 +82,7 @@ class ListenerService(override val plugin: Elixir) : Extension<Elixir>() {
             val torches by lazy {
                 persistentListOf(
                     Material.SOUL_TORCH,
-                    Material.TORCH,
+                    Material.TORCH
                 )
             }
             event<EntityDamageByEntityEvent> {
