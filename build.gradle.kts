@@ -1,3 +1,5 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission
+
 plugins {
     id("dev.racci.minix.kotlin")
     id("dev.racci.minix.copyjar")
@@ -20,17 +22,37 @@ bukkit {
         "ProtocolLib"
     )
     website = "https://elixir.racci.dev/"
+    permissions.create("elixir.connection-message") {
+        description = "Broadcasts a message when the player joins or leaves."
+        default = Permission.Default.OP
+    }
+    permissions.create("elixir.connection-message.toggle") {
+        description = "Allows the player to toggle their connection message."
+        default = Permission.Default.OP
+    }
+    permissions.create("elixir.connection-message.toggle.others") {
+        description = "Allows the player to toggle the connection message of another player."
+        default = Permission.Default.OP
+    }
+    permissions.create("elixir.connection-message.customise") {
+        description = "Allows the player to customise their connection message."
+        default = Permission.Default.OP
+    }
+    permissions.create("elixir.connection-message.customise.others") {
+        description = "Allows the player to customise the connection message of another player."
+        default = Permission.Default.OP
+    }
 }
 
 dependencies {
     implementation(project(":Elixir-Core"))
-    compileOnly(libs.kotlinx.serialization.json)
 }
 
 tasks {
     shadowJar {
         dependencyFilter.include {
-            it.moduleGroup == "dev.racci"
+            it.moduleGroup == "dev.racci" ||
+                it.moduleGroup == "com.h2database"
         }
     }
 }
@@ -45,5 +67,8 @@ subprojects {
         compileOnly(rootProject.libs.adventure.kotlin)
         compileOnly(rootProject.libs.koin.core)
         compileOnly(rootProject.libs.minecraft.api.landsAPI)
+
+        compileOnly(rootProject.libs.minecraft.minix)
+        compileOnly(rootProject.libs.minecraft.minix.core)
     }
 }

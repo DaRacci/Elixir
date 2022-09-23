@@ -1,7 +1,10 @@
 package dev.racci.elixir.core
 
-import dev.racci.elixir.core.services.HookService
-import dev.racci.elixir.core.services.StorageService
+import com.Zrips.CMI.Modules.Economy.Economy.plugin
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
+import dev.racci.elixir.core.data.ElixirPlayer
+import dev.racci.minix.api.annotations.MappedPlugin
 import dev.racci.minix.api.plugin.MinixPlugin
 import me.angeschossen.lands.api.exceptions.FlagConflictException
 import me.angeschossen.lands.api.flags.Flag
@@ -9,45 +12,71 @@ import me.angeschossen.lands.api.flags.types.LandFlag
 import me.angeschossen.lands.api.integration.LandsIntegration
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import java.util.logging.Level
-import kotlin.properties.Delegates
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 
+@MappedPlugin(-1, Elixir::class)
 class Elixir : MinixPlugin() {
-
-    lateinit var landsHook: LandsHook
-
     override suspend fun handleLoad() {
-        if (description.version.endsWith("-SNAPSHOT")) logger.level = Level.ALL
-        landsHook = LandsHook()
+        this.registerLandsFlag()
     }
 
-    override suspend fun handleAfterLoad() {
-        if (logger.level != Level.ALL && StorageService.getService()["debug"]) logger.level = Level.ALL
+    override suspend fun handleEnable() {
+        this.prepareDatabase()
     }
 
-    interface ILandsHook : HookService.HookService<LandsIntegration> {
-        val coralDecayFlag: LandFlag
+    override suspend fun handleDisable() {
+        getKoin().getProperty<HikariDataSource>(KOIN_DATASOURCE)?.close()
+        getKoin().deleteProperty(KOIN_DATASOURCE)
+        getKoin().deleteProperty(KOIN_DATABASE)
     }
 
-    class LandsHook : ILandsHook {
-
-        override var manager: LandsIntegration? = null
-        override var coralDecayFlag: LandFlag by Delegates.notNull()
-
-        init {
-            manager = LandsIntegration(plugin)
-            try {
-                coralDecayFlag = LandFlag(plugin, Flag.Target.PLAYER, "PreventCoralDecay", true, false).apply {
-                    defaultState = true
-                    description = listOf("Prevent coral from naturally becoming dead coral when out of water.")
-                    this.module
-                    setIcon(ItemStack(Material.DEAD_BRAIN_CORAL))
-                    setDisplayName("Prevent Coral Decay")
-                }
-                manager!!.registerFlag(coralDecayFlag)
-            } catch (ex: FlagConflictException) {
-                log.error("Flag conflict: ${ex.existing.name} from plugin ${ex.existing.plugin.description.fullName}")
-            }
+    private fun prepareDatabase() {
+        val config = HikariConfig().apply {
+            this.jdbcUrl = "jdbc:sqlite:${dataFolder.path}/database.db"
+            this.connectionTestQuery = "SELECT 1"
+            this.addDataSourceProperty("cachePrepStmts", true)
+            this.addDataSourceProperty("prepStmtCacheSize", "250")
+            this.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
         }
+        val dataSource = HikariDataSource(config)
+        val database = Database.connect(dataSource)
+        getKoin().setProperty(KOIN_DATABASE, database)
+        getKoin().setProperty(KOIN_DATASOURCE, dataSource)
+
+        transaction(database) {
+            SchemaUtils.createMissingTablesAndColumns(ElixirPlayer.User)
+        }
+    }
+
+    private fun registerLandsFlag() {
+        try {
+            LandsIntegration(plugin)
+                .registerFlag(
+                    LandFlag(
+                        plugin,
+                        Flag.Target.PLAYER,
+                        "PreventCoralDecay",
+                        true,
+                        false
+                    ).apply {
+                        defaultState = true
+                        description = listOf("Prevent coral from naturally becoming dead coral when out of water.")
+                        this.module
+                        setIcon(ItemStack(Material.DEAD_BRAIN_CORAL))
+                        setDisplayName("Prevent Coral Decay")
+                    }
+                )
+        } catch (e: FlagConflictException) {
+            log.error { "Flag conflict: ${e.existing.name} from plugin ${e.existing.plugin.description.fullName}" }
+        } catch (e: IllegalStateException) {
+            /* Elixir was loaded after server start. */
+        }
+    }
+
+    companion object {
+        const val KOIN_DATASOURCE = "elixir:dataSource"
+        const val KOIN_DATABASE = "elixir:database"
     }
 }
