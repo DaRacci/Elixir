@@ -4,7 +4,10 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dev.racci.elixir.core.data.ElixirPlayer
 import dev.racci.elixir.core.modules.AetherModule
+import dev.racci.elixir.core.modules.BeaconModule
+import dev.racci.elixir.core.modules.ConcreteModule
 import dev.racci.elixir.core.modules.ConnectionMessageModule
+import dev.racci.elixir.core.modules.TorchFireModule
 import dev.racci.minix.api.annotations.MappedPlugin
 import dev.racci.minix.api.plugin.MinixPlugin
 import me.angeschossen.lands.api.exceptions.FlagConflictException
@@ -27,6 +30,9 @@ class Elixir : MinixPlugin() {
         this.prepareDatabase()
 
         AetherModule.tryLoad()
+        BeaconModule.tryLoad()
+        ConcreteModule.tryLoad()
+        TorchFireModule.tryLoad()
         ConnectionMessageModule.tryLoad()
     }
 
