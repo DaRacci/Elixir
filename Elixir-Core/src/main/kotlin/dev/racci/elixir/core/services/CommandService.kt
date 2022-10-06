@@ -1,5 +1,6 @@
 package dev.racci.elixir.core.services
 
+import cloud.commandframework.Description
 import cloud.commandframework.arguments.flags.CommandFlag
 import cloud.commandframework.arguments.standard.EnumArgument
 import cloud.commandframework.arguments.standard.StringArgument
@@ -15,8 +16,10 @@ import cloud.commandframework.paper.PaperCommandManager
 import cloud.commandframework.permission.OrPermission
 import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.constants.ElixirPermission
+import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
 import dev.racci.elixir.core.data.ElixirPlayer
+import dev.racci.elixir.core.data.ElixirPlayer.Companion.get
 import dev.racci.elixir.core.data.ElixirPlayer.Companion.threadContext
 import dev.racci.minix.api.annotations.MappedExtension
 import dev.racci.minix.api.extension.Extension
@@ -27,6 +30,7 @@ import dev.racci.minix.api.services.DataService
 import dev.racci.minix.api.services.DataService.Companion.inject
 import dev.racci.minix.api.utils.Closeable
 import dev.racci.minix.api.utils.adventure.PartialComponent
+import dev.racci.minix.core.services.DataServiceImpl
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -35,6 +39,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.koin.core.component.get
 import kotlin.jvm.optionals.getOrElse
 
 @MappedExtension(Elixir::class, "Command Service")
@@ -91,6 +96,11 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
                 .withPermission(ElixirPermission.CONNECTION_TOGGLE_OTHERS.permission)
                 .withAliases("p")
                 .withArgument(PlayerArgument.newBuilder<Player>("player").asOptional().build())
+
+            this.registerCopy("reload", Description.of("Reload the plugin")) {
+                permission(ElixirPermission.RELOAD.permission)
+                suspendingHandler(supervisor, dispatcher.get()) { handleReload() }
+            }
 
             this.registerCopy("toggle", RichDescription.of(elixirLang.commands.connectionToggleDescription.get())) {
                 permission(OrPermission.of(listOf(ElixirPermission.CONNECTION_TOGGLE.permission, ElixirPermission.CONNECTION_TOGGLE_OTHERS.permission)))
@@ -218,6 +228,16 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
             "old" to { componentWithCopy(oldMessage) },
             "new" to { componentWithCopy(newMessage) }
         ] message context.sender
+    }
+
+    private fun handleReload() {
+        val service = get<DataServiceImpl>()
+
+        service.configDataHolder.invalidate(ElixirLang::class)
+        service.configDataHolder.invalidate(ElixirConfig::class)
+
+        service.configDataHolder[ElixirLang::class]
+        service.configDataHolder[ElixirConfig::class]
     }
 
     private fun componentWithCopy(component: Component?): Component {

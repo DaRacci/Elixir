@@ -1,9 +1,10 @@
 package dev.racci.elixir.core
 
-import com.Zrips.CMI.Modules.Economy.Economy.plugin
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dev.racci.elixir.core.data.ElixirPlayer
+import dev.racci.elixir.core.modules.AetherModule
+import dev.racci.elixir.core.modules.ConnectionMessageModule
 import dev.racci.minix.api.annotations.MappedPlugin
 import dev.racci.minix.api.plugin.MinixPlugin
 import me.angeschossen.lands.api.exceptions.FlagConflictException
@@ -24,6 +25,9 @@ class Elixir : MinixPlugin() {
 
     override suspend fun handleEnable() {
         this.prepareDatabase()
+
+        AetherModule.tryLoad()
+        ConnectionMessageModule.tryLoad()
     }
 
     override suspend fun handleDisable() {
@@ -52,10 +56,10 @@ class Elixir : MinixPlugin() {
 
     private fun registerLandsFlag() {
         try {
-            LandsIntegration(plugin)
+            LandsIntegration(this)
                 .registerFlag(
                     LandFlag(
-                        plugin,
+                        this,
                         Flag.Target.PLAYER,
                         "PreventCoralDecay",
                         true,

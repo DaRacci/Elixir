@@ -8,7 +8,10 @@ enum class ElixirPermission(val permissionString: String) {
     CONNECTION_TOGGLE("elixir.connection-message.toggle"),
     CONNECTION_TOGGLE_OTHERS("elixir.connection-message.toggle.others"),
     CONNECTION_MUTATE("elixir.connection-message.customise"),
-    CONNECTION_MUTATE_OTHERS("elixir.connection-message.customise.others");
+    CONNECTION_MUTATE_OTHERS("elixir.connection-message.customise.others"),
+
+    RELOAD("elixir.reload"),
+    AEHTER_MUTATE("elixir.aether.mutate");
 
     val permission: CommandPermission = Permission.of(permissionString)
 }
