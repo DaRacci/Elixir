@@ -2,7 +2,7 @@ package dev.racci.elixir.core.modules
 
 import dev.racci.elixir.core.constants.ElixirPermission
 import dev.racci.elixir.core.data.ElixirConfig
-import dev.racci.minix.api.events.PlayerMoveXYZEvent
+import dev.racci.minix.api.events.player.PlayerMoveXYZEvent
 import dev.racci.minix.api.extensions.cancel
 import dev.racci.minix.api.extensions.event
 import dev.racci.minix.api.extensions.events
@@ -19,11 +19,8 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import org.koin.core.component.get
 
-object AetherModule : ModuleActor<ElixirConfig.Modules.AetherConfig>(ElixirConfig.Modules::aether) {
-    override suspend fun shouldLoad() = get<ElixirConfig>().modules.aether.enabled
-
+object AetherModule : ModuleActor<ElixirConfig.Modules.Aether>() {
     override suspend fun load() {
         event(EventPriority.HIGHEST, true, block = ::handleVoid)
 
@@ -45,7 +42,7 @@ object AetherModule : ModuleActor<ElixirConfig.Modules.AetherConfig>(ElixirConfi
         )
     }
 
-    private suspend fun <T : Event> handlePotions(event: T) {
+    private fun <T : Event> handlePotions(event: T) {
         val config = this.getConfig()
 
         fun addPotions(player: Player) {
@@ -78,7 +75,7 @@ object AetherModule : ModuleActor<ElixirConfig.Modules.AetherConfig>(ElixirConfi
     }
 
     // TODO -> Intersection types
-    private suspend inline fun <T : Cancellable> handleBlockMutate(event: T) {
+    private fun <T : Cancellable> handleBlockMutate(event: T) {
         val player = when (event) {
             is BlockBreakEvent -> event.player
             is BlockPlaceEvent -> event.player
@@ -94,7 +91,7 @@ object AetherModule : ModuleActor<ElixirConfig.Modules.AetherConfig>(ElixirConfi
         event.cancel()
     }
 
-    private suspend inline fun handleVoid(event: PlayerMoveXYZEvent) {
+    private fun handleVoid(event: PlayerMoveXYZEvent) {
         val config = this.getConfig()
         if (config.preventVoid == -1) return
         if (!event.player.world.isAether()) return

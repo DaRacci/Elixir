@@ -8,7 +8,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 
-object TorchFireModule : ModuleActor<ElixirConfig.Modules.TorchFire>(ElixirConfig.Modules::torchFire) {
+object TorchFireModule : ModuleActor<ElixirConfig.Modules.TorchFire>() {
     private val torches by lazy {
         persistentListOf(
             Material.SOUL_TORCH,
@@ -20,7 +20,7 @@ object TorchFireModule : ModuleActor<ElixirConfig.Modules.TorchFire>(ElixirConfi
         event(EventPriority.HIGH, true, block = ::handleAttack)
     }
 
-    private suspend fun handleAttack(event: EntityDamageByEntityEvent) {
+    private fun handleAttack(event: EntityDamageByEntityEvent) {
         val config = this.getConfig()
         val burnTicks = config.burnTicks
         val attacker = event.damager as? LivingEntity

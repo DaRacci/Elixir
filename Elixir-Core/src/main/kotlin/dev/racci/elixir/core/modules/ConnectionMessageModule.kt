@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.koin.core.component.get
 
-object ConnectionMessageModule : ModuleActor<ElixirConfig.Modules.ConnectionMessageConfig>(ElixirConfig.Modules::joinMessages) {
+object ConnectionMessageModule : ModuleActor<ElixirConfig.Modules.ConnectionMessage>() {
 
     override suspend fun load() {
         event<PlayerJoinEvent>(EventPriority.MONITOR, true) {

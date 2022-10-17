@@ -4,9 +4,12 @@ import dev.racci.elixir.core.Elixir
 import dev.racci.minix.api.annotations.MappedConfig
 import dev.racci.minix.api.data.MinixConfig
 import dev.racci.minix.api.utils.PropertyFinder
+import dev.racci.minix.api.utils.adventure.PartialComponent
 import dev.racci.minix.api.utils.minecraft.BlockPos
+import org.bukkit.entity.EntityType
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.objectmapping.meta.Comment
+import org.spongepowered.configurate.objectmapping.meta.Required
 
 @ConfigSerializable
 @MappedConfig(Elixir::class, "elixir.conf")
@@ -15,7 +18,7 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
     var modules: Modules = Modules()
 
     @ConfigSerializable
-    class Modules : PropertyFinder<Modules.ModuleConfig>() {
+    class Modules : PropertyFinder<Modules.ModuleConfig>(KeyMode.CAPITALISED) {
         @Comment("The TorchFire module sets entities on fire when attacked with a torch.")
         var torchFire = TorchFire()
 
@@ -23,13 +26,19 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
         var drownConcrete = DrownConcrete()
 
         @Comment("Miscellaneous changes for beacons.")
-        var enhanceBeacons = EnhanceBeacon()
+        var enhanceBeacons = EnhanceBeacons()
 
         @Comment("Settings for handling the aether dimension.")
-        var aether = AetherConfig()
+        var aether = Aether()
 
         @Comment("Settings for handling join messages.")
-        var joinMessages = ConnectionMessageConfig()
+        var connectionMessage = ConnectionMessage()
+
+        @Comment("Settings for handling the TPS of the server.")
+        var tpsFixer = TPSFixer()
+
+        @Comment("Settings for handling the Opals module.")
+        var opals = Opals()
 
         @ConfigSerializable
         class TorchFire : ModuleConfig() {
@@ -40,12 +49,12 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
         class DrownConcrete : ModuleConfig()
 
         @ConfigSerializable
-        class EnhanceBeacon : ModuleConfig() {
+        class EnhanceBeacons : ModuleConfig() {
             var removeParticles: Boolean = true
         }
 
         @ConfigSerializable
-        class AetherConfig : ModuleConfig() {
+        class Aether : ModuleConfig() {
             var worldName: String = "Aether"
             var jumpBoost: Int = 3
             var slowFalling: Boolean = true
@@ -58,6 +67,9 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
             @Comment("Where to tp the player if they fall in the void, if null teleports to world spawn.")
             var portalCords: BlockPos? = null
         }
+
+        @ConfigSerializable
+        class ConnectionMessage : ModuleConfig()
 
         @ConfigSerializable
         class ConnectionMessageConfig : ModuleConfig()

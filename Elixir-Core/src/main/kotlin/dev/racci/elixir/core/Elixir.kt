@@ -4,9 +4,11 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dev.racci.elixir.core.data.ElixirPlayer
 import dev.racci.elixir.core.modules.AetherModule
-import dev.racci.elixir.core.modules.BeaconModule
-import dev.racci.elixir.core.modules.ConcreteModule
 import dev.racci.elixir.core.modules.ConnectionMessageModule
+import dev.racci.elixir.core.modules.DrownConcreteModule
+import dev.racci.elixir.core.modules.EnhanceBeaconsModule
+import dev.racci.elixir.core.modules.OpalsModule
+import dev.racci.elixir.core.modules.TPSFixerModule
 import dev.racci.elixir.core.modules.TorchFireModule
 import dev.racci.minix.api.annotations.MappedPlugin
 import dev.racci.minix.api.plugin.MinixPlugin
@@ -30,8 +32,8 @@ class Elixir : MinixPlugin() {
         this.prepareDatabase()
 
         AetherModule.tryLoad()
-        BeaconModule.tryLoad()
-        ConcreteModule.tryLoad()
+        EnhanceBeaconsModule.tryLoad()
+        DrownConcreteModule.tryLoad()
         TorchFireModule.tryLoad()
         ConnectionMessageModule.tryLoad()
     }

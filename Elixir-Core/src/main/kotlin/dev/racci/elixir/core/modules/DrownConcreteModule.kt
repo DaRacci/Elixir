@@ -19,7 +19,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerDropItemEvent
 import kotlin.reflect.full.declaredMemberProperties
 
-object ConcreteModule : ModuleActor<ElixirConfig.Modules.DrownConcrete>(ElixirConfig.Modules::drownConcrete) {
+object DrownConcreteModule : ModuleActor<ElixirConfig.Modules.DrownConcrete>() {
 
     override suspend fun load() {
         event(EventPriority.HIGH, ignoreCancelled = true, forceAsync = true, ::handleDrown)
