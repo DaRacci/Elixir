@@ -24,10 +24,11 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
 class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
-    private var _joinMessage by User.joinMessage
-    private var _leaveMessage by User.leaveMessage
+    private var _joinMessage by ElixirUser.joinMessage
+    private var _leaveMessage by ElixirUser.leaveMessage
+    private var _purchases by ElixirUser.purchases
 
-    var disableConnectionMessages by User.disableConnectionMessages
+    var disableConnectionMessages by ElixirUser.disableConnectionMessages
 
     var joinMessage: Component?
         get() = deserialize(_joinMessage)
@@ -41,6 +42,30 @@ class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
             _leaveMessage = serialize(value)
         }
 
+    var opals: Int by ElixirUser.opals
+
+    val purchases: MutableMap<String, Int> by lazy(::PurchaseMap)
+
+    inner class PurchaseMap : MutableMap<String, Int> by (_purchases.split(",").map { it.split(":", limit = 1) }.associate { it[0] to it[1].toInt() }.toMutableMap()) {
+        override fun put(key: String, value: Int): Int? {
+            val old = get(key)
+            val oldString = "$key:${old ?: 0}"
+            val newString = "$key:$value"
+
+            if (_purchases.contains(oldString)) {
+                _purchases = _purchases.replace(oldString, newString)
+            } else _purchases += ",$newString"
+
+            return old
+        }
+
+        override fun remove(key: String): Int? {
+            val old = get(key)
+            _purchases = _purchases.replace("$key:${old ?: 0}", "")
+            return old
+        }
+    }
+
     private fun deserialize(value: String?): Component? {
         if (value == null) return null
 
@@ -53,14 +78,16 @@ class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
         return GsonComponentSerializer.gson().serialize(value)
     }
 
-    internal object User : UUIDTable("user") {
+    internal object ElixirUser : UUIDTable("user") {
         val joinMessage = text("join_message").nullable().default(null)
         val leaveMessage = text("leave_message").nullable().default(null)
-
         val disableConnectionMessages = bool("disable_connection_messages").default(false)
+
+        val opals = integer("opals").default(0)
+        val purchases = text("purchases").default("")
     }
 
-    companion object : UUIDEntityClass<ElixirPlayer>(User) {
+    companion object : UUIDEntityClass<ElixirPlayer>(ElixirUser) {
         @OptIn(DelicateCoroutinesApi::class)
         val threadContext = object : Closeable<ExecutorCoroutineDispatcher>() {
             override fun create(): ExecutorCoroutineDispatcher = newSingleThreadContext("Elixir H2 Handler")

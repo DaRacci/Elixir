@@ -10,6 +10,10 @@ enum class ElixirPermission(val permissionString: String) {
     CONNECTION_MUTATE("elixir.connection-message.customise"),
     CONNECTION_MUTATE_OTHERS("elixir.connection-message.customise.others"),
 
+    OPALS_MUTATE("elixir.opals.mutate"),
+    OPALS_GET("elixir.opals.get"),
+    OPALS_SHOP("elixir.opals.shop"),
+
     RELOAD("elixir.reload"),
     AEHTER_MUTATE("elixir.aether.mutate");
 

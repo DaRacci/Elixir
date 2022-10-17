@@ -3,6 +3,7 @@ package dev.racci.elixir.core.services
 import cloud.commandframework.Description
 import cloud.commandframework.arguments.flags.CommandFlag
 import cloud.commandframework.arguments.standard.EnumArgument
+import cloud.commandframework.arguments.standard.IntegerArgument
 import cloud.commandframework.arguments.standard.StringArgument
 import cloud.commandframework.bukkit.parsers.PlayerArgument
 import cloud.commandframework.context.CommandContext
@@ -19,8 +20,8 @@ import dev.racci.elixir.core.constants.ElixirPermission
 import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
 import dev.racci.elixir.core.data.ElixirPlayer
-import dev.racci.elixir.core.data.ElixirPlayer.Companion.get
 import dev.racci.elixir.core.data.ElixirPlayer.Companion.threadContext
+import dev.racci.elixir.core.modules.OpalsModule
 import dev.racci.minix.api.annotations.MappedExtension
 import dev.racci.minix.api.extension.Extension
 import dev.racci.minix.api.extensions.message
@@ -65,6 +66,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
                     ]
                 }
                 .withHandler(MinecraftExceptionHandler.ExceptionType.COMMAND_EXECUTION) { _, e ->
+                    logger.error(e) { "An error occurred while executing a command" }
                     elixirLang.commands.executionError["error" to { e.message ?: "unknown" }]
                 }
                 .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION) { _, e ->
@@ -80,9 +82,118 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
             return manager
         }
     }
+    private val playerFlag = CommandFlag.newBuilder("player")
+        .withDescription(RichDescription.of(elixirLang.commands.connectionPlayerFlagDescription.get()))
+        .withPermission(ElixirPermission.CONNECTION_TOGGLE_OTHERS.permission)
+        .withAliases("p")
+        .withArgument(PlayerArgument.newBuilder<Player>("player").asOptional().build())
 
     override suspend fun handleEnable() {
+        registerOpalCommands()
         registerJoinLeaveMessage()
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun registerOpalCommands() {
+        manager.get().buildAndRegister(
+            "opals",
+            RichDescription.of(Component.empty()),
+            emptyArray()
+        ) {
+            this.registerCopy("shop", RichDescription.of(Component.empty())) {
+                commandPermission = ElixirPermission.OPALS_SHOP.permission
+                mutate { it.flag(playerFlag) }
+                handler { ctx ->
+                    OpalsModule.openShop(ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player })
+                }
+            }
+
+            this.registerCopy("get", RichDescription.of(Component.empty())) {
+                commandPermission = ElixirPermission.OPALS_GET.permission
+                mutate { it.flag(playerFlag) }
+                suspendingHandler { ctx ->
+                    val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
+                    val amount = ElixirPlayer.transactionDeferred { ElixirPlayer[target.uniqueId].opals }.await()
+
+                    elixirLang.commands.opalsGet[
+                        "target" to { getTargetComponent(target, ctx, true) },
+                        "amount" to { amount }
+                    ] message ctx.sender
+                }
+            }
+
+            this.registerCopy("set", RichDescription.of(Component.empty())) {
+                commandPermission = ElixirPermission.OPALS_MUTATE.permission
+                mutate { it.flag(playerFlag) }
+                argument(IntegerArgument.of("amount"))
+                suspendingHandler { ctx ->
+                    val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
+                    val amount = ctx.get<Int>("amount")
+
+                    val (old, new) = ElixirPlayer.transactionDeferred {
+                        with(ElixirPlayer[target.uniqueId]) {
+                            val old = opals
+                            opals = amount
+                            old to opals
+                        }
+                    }.await()
+
+                    elixirLang.commands.opalsMutate[
+                        "target" to { getTargetComponent(target, ctx, true) },
+                        "previous" to { old },
+                        "new" to { new }
+                    ] message ctx.sender
+                }
+            }
+
+            this.registerCopy("give", RichDescription.of(Component.empty())) {
+                commandPermission = ElixirPermission.OPALS_MUTATE.permission
+                mutate { it.flag(playerFlag) }
+                argument(IntegerArgument.of("amount"))
+                suspendingHandler { ctx ->
+                    val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
+                    val amount = ctx.get<Int>("amount")
+
+                    val (old, new) = ElixirPlayer.transactionDeferred {
+                        with(ElixirPlayer[target.uniqueId]) {
+                            val old = opals
+                            opals += amount
+                            old to opals
+                        }
+                    }.await()
+
+                    elixirLang.commands.opalsMutate[
+                        "target" to { getTargetComponent(target, ctx, true) },
+                        "previous" to { old },
+                        "new" to { new }
+                    ] message ctx.sender
+                }
+            }
+
+            this.registerCopy("take", RichDescription.of(Component.empty())) {
+                commandPermission = ElixirPermission.OPALS_MUTATE.permission
+                mutate { it.flag(playerFlag) }
+                argument(IntegerArgument.of("amount"))
+                suspendingHandler { ctx ->
+                    val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
+                    val amount = ctx.get<Int>("amount")
+
+                    val (old, new) = ElixirPlayer.transactionDeferred {
+                        with(ElixirPlayer[target.uniqueId]) {
+                            val old = opals
+                            opals -= amount
+                            old to opals
+                        }
+                    }.await()
+
+                    elixirLang.commands.opalsMutate[
+                        "target" to { getTargetComponent(target, ctx, true) },
+                        "previous" to { old },
+                        "new" to { new }
+                    ] message ctx.sender
+                }
+            }
+        }
     }
 
     private fun registerJoinLeaveMessage() {
@@ -91,12 +202,6 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
             RichDescription.of(elixirLang.commands.connectionDescription.get()),
             emptyArray()
         ) {
-            val playerFlag = CommandFlag.newBuilder("player")
-                .withDescription(RichDescription.of(elixirLang.commands.connectionPlayerFlagDescription.get()))
-                .withPermission(ElixirPermission.CONNECTION_TOGGLE_OTHERS.permission)
-                .withAliases("p")
-                .withArgument(PlayerArgument.newBuilder<Player>("player").asOptional().build())
-
             this.registerCopy("reload", Description.of("Reload the plugin")) {
                 permission(ElixirPermission.RELOAD.permission)
                 suspendingHandler(supervisor, dispatcher.get()) { handleReload() }
@@ -140,7 +245,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
         }
     }
 
-    private suspend fun handleToggleMessage(context: CommandContext<CommandSender>) {
+    private fun handleToggleMessage(context: CommandContext<CommandSender>) {
         logger.trace { "handleToggleMessage" }
         val target = getTarget(context, ElixirPermission.CONNECTION_TOGGLE, ElixirPermission.CONNECTION_TOGGLE_OTHERS) ?: return
         logger.trace { "target: $target" }
@@ -159,7 +264,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
         ] message context.sender
     }
 
-    private suspend fun handleEnableMessage(context: CommandContext<CommandSender>) {
+    private fun handleEnableMessage(context: CommandContext<CommandSender>) {
         logger.trace { "handleEnableMessage" }
         val target = getTarget(context, ElixirPermission.CONNECTION_TOGGLE, ElixirPermission.CONNECTION_TOGGLE_OTHERS) ?: return
         logger.trace { "target: $target" }
@@ -174,7 +279,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
         ] message context.sender
     }
 
-    private suspend fun handleDisableMessage(context: CommandContext<CommandSender>) {
+    private fun handleDisableMessage(context: CommandContext<CommandSender>) {
         logger.trace { "handleDisableMessage" }
         val target = getTarget(context, ElixirPermission.CONNECTION_TOGGLE, ElixirPermission.CONNECTION_TOGGLE_OTHERS) ?: return
         logger.trace { "target: $target" }
@@ -190,7 +295,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    private suspend fun handleMutateMessage(context: CommandContext<CommandSender>) {
+    private fun handleMutateMessage(context: CommandContext<CommandSender>) {
         val target = getTarget(context, ElixirPermission.CONNECTION_MUTATE, ElixirPermission.CONNECTION_MUTATE_OTHERS) ?: return
 
         val type = context.flags().getValue<ConnectionMessage>("connectionType").getOrElse {
@@ -250,8 +355,11 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
 
     private fun getTargetComponent(
         target: Player,
-        context: CommandContext<CommandSender>
-    ): Component = if (target === context.sender) Component.text("Your") else target.displayName().append(Component.text("'s"))
+        context: CommandContext<CommandSender>,
+        useNoun: Boolean = false
+    ) = if (context.sender === target) {
+        if (useNoun) Component.text("You") else Component.text("your")
+    } else if (useNoun) target.displayName() else target.displayName().append(Component.text("'s"))
 
     private fun getTarget(
         context: CommandContext<CommandSender>,

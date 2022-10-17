@@ -18,6 +18,8 @@ class ElixirLang : LangConfig<Elixir>() {
 
     var commands = Commands()
 
+    var opalShop = OpalShop()
+
     @ConfigSerializable
     class Commands : InnerLang() {
         var reloadSuccess = PartialComponent.of("<prefix:elixir><aqua>Successfully reloaded the plugin in <time>!")
@@ -40,11 +42,32 @@ class ElixirLang : LangConfig<Elixir>() {
         var connectionTypeFlagDescription = PartialComponent.of("<aqua>The connection type to modify, either join or leave.")
         var connectionMessageFlagDescription = PartialComponent.of("<aqua>The message to set the connection message to.")
 
+        var opalsGet = PartialComponent.of("<prefix:elixir><target> has <amount> opals!")
+        var opalsMutate = PartialComponent.of("<prefix:elixir>Mutated <target> opals from <previous> to <new> opals!")
+
         var invalidSyntax = PartialComponent.of("<red>Invalid syntax! <gold>/<command> <args>")
         var executionError = PartialComponent.of("<red>An error occurred while executing this command!")
         var noPermission = PartialComponent.of("<red>You do not have permission to execute this command! (<permission>)")
         var invalidSender = PartialComponent.of("<red>You must be a player to execute this command!")
         var invalidPlayer = PartialComponent.of("<red>Couldn't find player <player>!")
         var missingArgument = PartialComponent.of("<red>Missing argument <arg>!")
+    }
+
+    @ConfigSerializable
+    class OpalShop : InnerLang() {
+        var itemPurchasable = PartialComponent.of("<aqua>Left click to buy!")
+        var itemAlreadyPurchased = PartialComponent.of("<red>You have already purchased this item!")
+        var itemNotAffordable = arrayListOf(
+            PartialComponent.of("<red>You cannot afford items!"),
+            PartialComponent.of("<red>You need <aqua><needed></aqua>❖ more opals."),
+            PartialComponent.of("<red>Get some at <aqua>store.elixirmc.net")
+        )
+
+        var purchaseSuccess = PartialComponent.of("<prefix:elixir><aqua>You have successfully purchased <item> for <price>!")
+        var purchaseBroadcast = PartialComponent.of("<prefix:elixir><aqua><player> has purchased <item>!")
+        var purchaseFailure = PartialComponent.of("<prefix:elixir><red>You need <needed> more opals to purchase <item>!")
+        var purchaseFailureNoPrice = PartialComponent.of("<prefix:elixir><red>Couldn't find price for <item>!")
+        var purchaseFailureNoPermission = PartialComponent.of("<prefix:elixir><red>You do not have permission to purchase <item>!")
+        var purchaseFailureNoSpace = PartialComponent.of("<prefix:elixir><red>You do not have enough space in your inventory to purchase <item>!")
     }
 }

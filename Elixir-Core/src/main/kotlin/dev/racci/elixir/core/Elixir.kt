@@ -18,6 +18,7 @@ import me.angeschossen.lands.api.flags.types.LandFlag
 import me.angeschossen.lands.api.integration.LandsIntegration
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import org.incendo.interfaces.paper.PaperInterfaceListeners
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -31,11 +32,15 @@ class Elixir : MinixPlugin() {
     override suspend fun handleEnable() {
         this.prepareDatabase()
 
+        PaperInterfaceListeners.install(this)
+
         AetherModule.tryLoad()
         EnhanceBeaconsModule.tryLoad()
         DrownConcreteModule.tryLoad()
         TorchFireModule.tryLoad()
         ConnectionMessageModule.tryLoad()
+        TPSFixerModule.tryLoad()
+        OpalsModule.tryLoad()
     }
 
     override suspend fun handleDisable() {
@@ -58,7 +63,7 @@ class Elixir : MinixPlugin() {
         getKoin().setProperty(KOIN_DATASOURCE, dataSource)
 
         transaction(database) {
-            SchemaUtils.createMissingTablesAndColumns(ElixirPlayer.User)
+            SchemaUtils.createMissingTablesAndColumns(ElixirPlayer.ElixirUser)
         }
     }
 
