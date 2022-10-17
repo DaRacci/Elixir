@@ -11,14 +11,17 @@ repositories {
 
 dependencies {
     implementation(project(":Elixir-API"))
-    compileOnly(rootProject.libs.bundles.exposed)
-    compileOnly(rootProject.libs.minecraft.minix)
-    compileOnly(rootProject.libs.minecraft.api.protoclLib)
-    compileOnly(rootProject.libs.caffeine)
-    compileOnly(rootProject.libs.bundles.cloud)
-    compileOnly(rootProject.libs.bundles.cloud.kotlin)
+    compileOnly(libs.bundles.exposed)
+    compileOnly(libs.minecraft.minix)
+    compileOnly(libs.minecraft.api.protoclLib)
+    compileOnly(libs.caffeine)
+    compileOnly(libs.bundles.cloud)
+    compileOnly(libs.bundles.cloud.kotlin)
+    compileOnly(libs.minecraft.api.eco)
     compileOnly(files("../lib/CMIAPI8.7.8.2.jar"))
     compileOnly("com.willfp:EcoBosses:8.89.0")
+    compileOnly("org.incendo.interfaces:interfaces-paper:1.0.0-SNAPSHOT")
+    compileOnly("org.incendo.interfaces:interfaces-kotlin:1.0.0-SNAPSHOT")
 
     compileOnly("com.h2database:h2:2.1.214")
 }

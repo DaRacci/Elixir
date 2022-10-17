@@ -1,10 +1,11 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission
 
 plugins {
-    id("dev.racci.minix.kotlin")
-    id("dev.racci.minix.copyjar")
-    id("dev.racci.minix.purpurmc")
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
+    alias(libs.plugins.minix.kotlin)
+    alias(libs.plugins.minix.copyjar)
+    alias(libs.plugins.minix.purpurmc)
+    alias(libs.plugins.minecraft.pluginYML)
+    alias(libs.plugins.slimjar)
 }
 
 bukkit {
@@ -46,14 +47,20 @@ bukkit {
 
 dependencies {
     implementation(project(":Elixir-Core"))
+    implementation("org.incendo.interfaces:interfaces-paper:1.0.0-SNAPSHOT")
+    implementation("org.incendo.interfaces:interfaces-kotlin:1.0.0-SNAPSHOT")
 }
 
 tasks {
     shadowJar {
         dependencyFilter.include {
             it.moduleGroup == "dev.racci" ||
-                it.moduleGroup == "com.h2database"
+                it.moduleGroup == "org.incendo.interfaces"
         }
+    }
+
+    build {
+        finalizedBy(copyJar)
     }
 }
 
