@@ -63,7 +63,8 @@ object TPSFixerModule : ModuleActor<ElixirConfig.Modules.TPSFixer>() {
         curTPS: Double,
         allEntities: Deferred<List<Entity>>
     ) {
-        if (curTPS <= getConfig().spawnerTPSThreshold) return
+        val threshold = getConfig().spawnerTPSThreshold
+        if (threshold == -1.0 || curTPS > threshold) return
 
         logger.info { "TPS is below threshold - Killing spawner mobs!" }
         for (entity in allEntities.await()) {
