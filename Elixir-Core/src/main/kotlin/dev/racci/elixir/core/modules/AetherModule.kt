@@ -67,7 +67,7 @@ object AetherModule : ModuleActor<ElixirConfig.Modules.Aether>() {
             event is PlayerChangedWorldEvent -> {
                 if (event.from.isAether()) {
                     removePotions(event.player)
-                } else addPotions(event.player)
+                } else if (event.player.world.isAether()) addPotions(event.player)
             }
             event is PlayerQuitEvent && event.player.world.isAether() -> removePotions(event.player)
             event is PlayerJoinEvent && event.player.world.isAether() -> addPotions(event.player)
