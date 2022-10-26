@@ -40,6 +40,11 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
         @Comment("Settings for handling the Opals module.")
         var opals = Opals()
 
+        var eggTracker = EggTracker()
+
+        @Comment("Settings for handling hub worlds.")
+        var hub = Hub()
+
         @ConfigSerializable
         class TorchFire : ModuleConfig() {
             var burnTicks: Int = 100
@@ -92,6 +97,9 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
                 -1.0 to 0f
             )
         }
+
+        @ConfigSerializable
+        class EggTracker : ModuleConfig()
 
         @ConfigSerializable
         class Opals : ModuleConfig() {
@@ -154,8 +162,19 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
             }
         }
 
-        open class ModuleConfig {
-            var enabled: Boolean = true
+        // TODO -> Customise through commands
+        @ConfigSerializable
+        class Hub : ModuleConfig(false) {
+            @Comment("The names of your hub worlds. (Case insensitive)")
+            var worlds: List<String> = listOf("hub")
+
+            @Comment("The base speed for players within the hub.")
+            var speedMultiplier: Double = 1.3
+
+            @Comment("The jump level for players within the hub.")
+            var jumpLevel: Int = 2
         }
+
+        open class ModuleConfig(var enabled: Boolean = true)
     }
 }

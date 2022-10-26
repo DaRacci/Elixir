@@ -20,6 +20,8 @@ class ElixirLang : LangConfig<Elixir>() {
 
     var opalShop = OpalShop()
 
+    var eggTracker = EggTracker()
+
     @ConfigSerializable
     class Commands : InnerLang() {
         var reloadSuccess = PartialComponent.of("<prefix:elixir><aqua>Successfully reloaded the plugin in <time>!")
@@ -69,5 +71,10 @@ class ElixirLang : LangConfig<Elixir>() {
         var purchaseFailureNoPrice = PartialComponent.of("<prefix:elixir><red>Couldn't find price for <item>!")
         var purchaseFailureNoPermission = PartialComponent.of("<prefix:elixir><red>You do not have permission to purchase <item>!")
         var purchaseFailureNoSpace = PartialComponent.of("<prefix:elixir><red>You do not have enough space in your inventory to purchase <item>!")
+    }
+
+    @ConfigSerializable
+    class EggTracker : InnerLang() {
+        var cannotDrop = PartialComponent.of("<prefix:elixir><red>You cannot drop the dragon egg!")
     }
 }

@@ -5,6 +5,7 @@ import dev.racci.elixir.core.constants.ElixirPermission
 import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
 import dev.racci.elixir.core.data.ElixirPlayer
+import dev.racci.elixir.core.services.ElixirStorageService
 import dev.racci.minix.api.extensions.event
 import net.kyori.adventure.text.Component
 import org.bukkit.GameMode
@@ -18,6 +19,7 @@ object ConnectionMessageModule : ModuleActor<ElixirConfig.Modules.ConnectionMess
 
     override suspend fun load() {
         event<PlayerJoinEvent>(EventPriority.MONITOR, true) {
+            Thread.sleep(250) // Wait for Carbon to change the player's display name
             this.joinMessage(message(player) { this.joinMessage ?: get<ElixirLang>().defaultJoinMessage["player" to { player.displayName() }] })
         }
 
@@ -35,19 +37,19 @@ object ConnectionMessageModule : ModuleActor<ElixirConfig.Modules.ConnectionMess
             return null
         }
 
-        return ElixirPlayer.transactionFuture {
+        return ElixirStorageService.transaction {
             val elixirPlayer = ElixirPlayer[player.uniqueId]
             if (elixirPlayer.disableConnectionMessages) {
                 logger.debug { "Player ${player.name} has disabled connection messages." }
-                return@transactionFuture null
+                return@transaction null
             }
             if (hideMessage(player)) {
                 logger.debug { "Player ${player.name} is vanished." }
-                return@transactionFuture null
+                return@transaction null
             }
 
             elixirPlayer.message()
-        }.get()
+        }
     }
 
     // TODO -> CMI Hook in Minix

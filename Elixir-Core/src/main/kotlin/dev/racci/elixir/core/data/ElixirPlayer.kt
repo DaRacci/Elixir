@@ -1,27 +1,12 @@
 package dev.racci.elixir.core.data
 
-import dev.racci.elixir.core.Elixir
-import dev.racci.minix.api.utils.Closeable
-import dev.racci.minix.api.utils.getKoin
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
-import kotlinx.coroutines.future.asCompletableFuture
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync
 import java.util.UUID
-import java.util.concurrent.CompletableFuture
 
 class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
     private var _joinMessage by ElixirUser.joinMessage
@@ -46,7 +31,12 @@ class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
 
     val purchases: MutableMap<String, Int> by lazy(::PurchaseMap)
 
-    inner class PurchaseMap : MutableMap<String, Int> by (_purchases.split(",").map { it.split(":", limit = 1) }.associate { it[0] to it[1].toInt() }.toMutableMap()) {
+    inner class PurchaseMap : MutableMap<String, Int> by (
+        _purchases.split(",")
+            .map { it.split(":", limit = 2) }
+            .filter { it.size == 2 }
+            .associate { it[0] to it[1].toInt() }.toMutableMap()
+        ) {
         override fun put(key: String, value: Int): Int? {
             val old = get(key)
             val oldString = "$key:${old ?: 0}"
@@ -87,27 +77,5 @@ class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
         val purchases = text("purchases").default("")
     }
 
-    companion object : UUIDEntityClass<ElixirPlayer>(ElixirUser) {
-        @OptIn(DelicateCoroutinesApi::class)
-        val threadContext = object : Closeable<ExecutorCoroutineDispatcher>() {
-            override fun create(): ExecutorCoroutineDispatcher = newSingleThreadContext("Elixir H2 Handler")
-
-            override fun onClose() { this.value.value?.close() }
-        }
-
-        fun <T> transactionFuture(statement: suspend Transaction.() -> T): CompletableFuture<T> {
-            return runBlocking { transactionDeferred(statement).asCompletableFuture() }
-        }
-
-        suspend fun <T> transactionDeferred(statement: suspend Transaction.() -> T): Deferred<T> {
-            val db = getKoin().getProperty<Database>(Elixir.KOIN_DATABASE) ?: throw IllegalStateException("Database is not initialized")
-
-            return suspendedTransactionAsync(threadContext.get(), db) {
-                this.addLogger(StdOutSqlLogger)
-                val result = statement()
-                commit()
-                result
-            }
-        }
-    }
+    companion object : UUIDEntityClass<ElixirPlayer>(ElixirUser)
 }

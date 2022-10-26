@@ -30,12 +30,11 @@ class ListenerService(override val plugin: Elixir) : Extension<Elixir>() {
         event<AsyncPlayerPreLoginEvent>(EventPriority.LOWEST) {
             val uuid = this.uniqueId
             try {
-                transaction(getKoin().getProperty(Elixir.KOIN_DATABASE)) {
+                ElixirStorageService.transaction {
                     ElixirPlayer.findById(uuid) ?: ElixirPlayer.new(uuid) {}
                 }
             } catch (e: Exception) {
                 logger.error(e) { "Error while fetching player from database: ${e.message}" }
-//                this.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("An error occurred while fetching ElixirPlayer profile. Please try again later.").color(NamedTextColor.RED))
             }
         }
     }

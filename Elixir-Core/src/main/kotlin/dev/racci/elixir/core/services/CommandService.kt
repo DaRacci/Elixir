@@ -20,7 +20,6 @@ import dev.racci.elixir.core.constants.ElixirPermission
 import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
 import dev.racci.elixir.core.data.ElixirPlayer
-import dev.racci.elixir.core.data.ElixirPlayer.Companion.threadContext
 import dev.racci.elixir.core.modules.OpalsModule
 import dev.racci.minix.api.annotations.MappedExtension
 import dev.racci.minix.api.extension.Extension
@@ -39,18 +38,17 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.component.get
 import kotlin.jvm.optionals.getOrElse
 
-@MappedExtension(Elixir::class, "Command Service")
+@MappedExtension(Elixir::class, "Command Service", [ElixirStorageService::class])
 class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
     private val elixirLang by DataService.inject().inject<ElixirLang>()
     private val manager = object : Closeable<PaperCommandManager<CommandSender>>() {
         override fun create(): PaperCommandManager<CommandSender> {
             val coordinator = AsynchronousCommandExecutionCoordinator
                 .newBuilder<CommandSender>()
-                .withExecutor(threadContext.get().executor)
+                .withExecutor(dispatcher.get().executor)
                 .withAsynchronousParsing()
                 .build()
 
@@ -72,7 +70,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
                 .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION) { _, e ->
                     elixirLang.commands.noPermission["permission" to { e.message ?: "unknown" }]
                 }
-                .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SENDER) { _, e ->
+                .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SENDER) { _, _ ->
                     elixirLang.commands.invalidSender.get()
                 }
                 .withDecorator { component ->
@@ -113,7 +111,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
                 mutate { it.flag(playerFlag) }
                 suspendingHandler { ctx ->
                     val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
-                    val amount = ElixirPlayer.transactionDeferred { ElixirPlayer[target.uniqueId].opals }.await()
+                    val amount = ElixirStorageService.transaction { ElixirPlayer[target.uniqueId].opals }
 
                     elixirLang.commands.opalsGet[
                         "target" to { getTargetComponent(target, ctx, true) },
@@ -130,13 +128,13 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
                     val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
                     val amount = ctx.get<Int>("amount")
 
-                    val (old, new) = ElixirPlayer.transactionDeferred {
+                    val (old, new) = ElixirStorageService.transaction {
                         with(ElixirPlayer[target.uniqueId]) {
                             val old = opals
                             opals = amount
                             old to opals
                         }
-                    }.await()
+                    }
 
                     elixirLang.commands.opalsMutate[
                         "target" to { getTargetComponent(target, ctx, true) },
@@ -154,13 +152,13 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
                     val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
                     val amount = ctx.get<Int>("amount")
 
-                    val (old, new) = ElixirPlayer.transactionDeferred {
+                    val (old, new) = ElixirStorageService.transaction {
                         with(ElixirPlayer[target.uniqueId]) {
                             val old = opals
                             opals += amount
                             old to opals
                         }
-                    }.await()
+                    }
 
                     elixirLang.commands.opalsMutate[
                         "target" to { getTargetComponent(target, ctx, true) },
@@ -178,13 +176,13 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
                     val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
                     val amount = ctx.get<Int>("amount")
 
-                    val (old, new) = ElixirPlayer.transactionDeferred {
+                    val (old, new) = ElixirStorageService.transaction {
                         with(ElixirPlayer[target.uniqueId]) {
                             val old = opals
                             opals -= amount
                             old to opals
                         }
-                    }.await()
+                    }
 
                     elixirLang.commands.opalsMutate[
                         "target" to { getTargetComponent(target, ctx, true) },
@@ -210,19 +208,19 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
             this.registerCopy("toggle", RichDescription.of(elixirLang.commands.connectionToggleDescription.get())) {
                 permission(OrPermission.of(listOf(ElixirPermission.CONNECTION_TOGGLE.permission, ElixirPermission.CONNECTION_TOGGLE_OTHERS.permission)))
                 mutate { it.flag(playerFlag) }
-                suspendingHandler(supervisor, threadContext.get()) { handleToggleMessage(it) }
+                suspendingHandler(supervisor, dispatcher.get()) { handleToggleMessage(it) }
             }
 
             this.registerCopy("enable", RichDescription.of(elixirLang.commands.connectionEnableDescription.get())) {
                 permission(OrPermission.of(listOf(ElixirPermission.CONNECTION_TOGGLE.permission, ElixirPermission.CONNECTION_TOGGLE_OTHERS.permission)))
                 mutate { it.flag(playerFlag) }
-                suspendingHandler(supervisor, threadContext.get()) { handleEnableMessage(it) }
+                suspendingHandler(supervisor, dispatcher.get()) { handleEnableMessage(it) }
             }
 
             this.registerCopy("disable", RichDescription.of(elixirLang.commands.connectionDisableDescription.get())) {
                 permission(OrPermission.of(listOf(ElixirPermission.CONNECTION_TOGGLE.permission, ElixirPermission.CONNECTION_TOGGLE_OTHERS.permission)))
                 mutate { it.flag(playerFlag) }
-                suspendingHandler(supervisor, threadContext.get()) { handleDisableMessage(it) }
+                suspendingHandler(supervisor, dispatcher.get()) { handleDisableMessage(it) }
             }
 
             this.registerCopy("mutate", RichDescription.of(elixirLang.commands.connectionMutateDescription.get())) {
@@ -240,7 +238,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
                     RichDescription.of(elixirLang.commands.connectionMessageFlagDescription.get()),
                     StringArgument.greedy("message")
                 )
-                suspendingHandler(supervisor, threadContext.get()) { handleMutateMessage(it) }
+                suspendingHandler(supervisor, dispatcher.get()) { handleMutateMessage(it) }
             }
         }
     }
@@ -250,7 +248,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
         val target = getTarget(context, ElixirPermission.CONNECTION_TOGGLE, ElixirPermission.CONNECTION_TOGGLE_OTHERS) ?: return
         logger.trace { "target: $target" }
 
-        val newValue = transaction(getKoin().getProperty(Elixir.KOIN_DATABASE)) {
+        val newValue = ElixirStorageService.transaction {
             val elixirPlayer = ElixirPlayer[target.uniqueId]
             elixirPlayer.disableConnectionMessages = !elixirPlayer.disableConnectionMessages
             elixirPlayer.disableConnectionMessages
@@ -269,7 +267,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
         val target = getTarget(context, ElixirPermission.CONNECTION_TOGGLE, ElixirPermission.CONNECTION_TOGGLE_OTHERS) ?: return
         logger.trace { "target: $target" }
 
-        transaction(getKoin().getProperty(Elixir.KOIN_DATABASE)) {
+        ElixirStorageService.transaction {
             ElixirPlayer[target.uniqueId].disableConnectionMessages = false
         }
 
@@ -284,7 +282,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
         val target = getTarget(context, ElixirPermission.CONNECTION_TOGGLE, ElixirPermission.CONNECTION_TOGGLE_OTHERS) ?: return
         logger.trace { "target: $target" }
 
-        transaction(getKoin().getProperty(Elixir.KOIN_DATABASE)) {
+        ElixirStorageService.transaction {
             ElixirPlayer[target.uniqueId].disableConnectionMessages = true
         }
 
@@ -308,7 +306,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
             return
         } ?: error("Message is null")
 
-        val (oldMessage, newMessage) = transaction(getKoin().getProperty(Elixir.KOIN_DATABASE)) {
+        val (oldMessage, newMessage) = ElixirStorageService.transaction {
             val elixirPlayer = ElixirPlayer[target.uniqueId]
             when (type) {
                 ConnectionMessage.JOIN -> {

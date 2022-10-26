@@ -1,12 +1,11 @@
 package dev.racci.elixir.core
 
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
-import dev.racci.elixir.core.data.ElixirPlayer
 import dev.racci.elixir.core.modules.AetherModule
 import dev.racci.elixir.core.modules.ConnectionMessageModule
 import dev.racci.elixir.core.modules.DrownConcreteModule
+import dev.racci.elixir.core.modules.EggTrackerModule
 import dev.racci.elixir.core.modules.EnhanceBeaconsModule
+import dev.racci.elixir.core.modules.HubModule
 import dev.racci.elixir.core.modules.OpalsModule
 import dev.racci.elixir.core.modules.TPSFixerModule
 import dev.racci.elixir.core.modules.TorchFireModule
@@ -19,9 +18,6 @@ import me.angeschossen.lands.api.integration.LandsIntegration
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.incendo.interfaces.paper.PaperInterfaceListeners
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @MappedPlugin(-1, Elixir::class)
 class Elixir : MinixPlugin() {
@@ -30,8 +26,6 @@ class Elixir : MinixPlugin() {
     }
 
     override suspend fun handleEnable() {
-        this.prepareDatabase()
-
         PaperInterfaceListeners.install(this)
 
         AetherModule.tryLoad()
@@ -41,30 +35,8 @@ class Elixir : MinixPlugin() {
         ConnectionMessageModule.tryLoad()
         TPSFixerModule.tryLoad()
         OpalsModule.tryLoad()
-    }
-
-    override suspend fun handleDisable() {
-        getKoin().getProperty<HikariDataSource>(KOIN_DATASOURCE)?.close()
-        getKoin().deleteProperty(KOIN_DATASOURCE)
-        getKoin().deleteProperty(KOIN_DATABASE)
-    }
-
-    private fun prepareDatabase() {
-        val config = HikariConfig().apply {
-            this.jdbcUrl = "jdbc:sqlite:${dataFolder.path}/database.db"
-            this.connectionTestQuery = "SELECT 1"
-            this.addDataSourceProperty("cachePrepStmts", true)
-            this.addDataSourceProperty("prepStmtCacheSize", "250")
-            this.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
-        }
-        val dataSource = HikariDataSource(config)
-        val database = Database.connect(dataSource)
-        getKoin().setProperty(KOIN_DATABASE, database)
-        getKoin().setProperty(KOIN_DATASOURCE, dataSource)
-
-        transaction(database) {
-            SchemaUtils.createMissingTablesAndColumns(ElixirPlayer.ElixirUser)
-        }
+        EggTrackerModule.tryLoad()
+        HubModule.tryLoad()
     }
 
     private fun registerLandsFlag() {
@@ -90,10 +62,5 @@ class Elixir : MinixPlugin() {
         } catch (e: IllegalStateException) {
             /* Elixir was loaded after server start. */
         }
-    }
-
-    companion object {
-        const val KOIN_DATASOURCE = "elixir:dataSource"
-        const val KOIN_DATABASE = "elixir:database"
     }
 }
