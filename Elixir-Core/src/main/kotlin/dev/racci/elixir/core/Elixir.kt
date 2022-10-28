@@ -59,8 +59,10 @@ class Elixir : MinixPlugin() {
                 )
         } catch (e: FlagConflictException) {
             log.error { "Flag conflict: ${e.existing.name} from plugin ${e.existing.plugin.description.fullName}" }
-        } catch (e: IllegalStateException) {
+        } catch (_: IllegalStateException) {
             /* Elixir was loaded after server start. */
+        } catch (_: NoClassDefFoundError) {
+            /* Lands is not installed. */
         }
     }
 }
