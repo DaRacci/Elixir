@@ -101,8 +101,14 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
             this.registerCopy("shop", RichDescription.of(Component.empty())) {
                 commandPermission = ElixirPermission.OPALS_SHOP.permission
                 mutate { it.flag(playerFlag) }
+                argument {
+                    StringArgument.newBuilder<CommandSender>("shop")
+                        .asOptionalWithDefault("main")
+                        .withSuggestionsProvider { _, _ -> OpalsModule.menus.keys.toList() }.build()
+                }
                 handler { ctx ->
-                    OpalsModule.openShop(ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player })
+                    val player = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
+                    OpalsModule.openShop(player, ctx.get("shop"))
                 }
             }
 
@@ -191,6 +197,8 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
                     ] message ctx.sender
                 }
             }
+
+            handler { ctx -> OpalsModule.openShop(ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }) }
         }
     }
 
