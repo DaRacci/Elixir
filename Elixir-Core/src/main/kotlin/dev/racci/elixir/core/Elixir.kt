@@ -57,12 +57,13 @@ class Elixir : MinixPlugin() {
                         setDisplayName("Prevent Coral Decay")
                     }
                 )
-        } catch (e: FlagConflictException) {
-            log.error { "Flag conflict: ${e.existing.name} from plugin ${e.existing.plugin.description.fullName}" }
         } catch (_: IllegalStateException) {
             /* Elixir was loaded after server start. */
         } catch (_: NoClassDefFoundError) {
             /* Lands is not installed. */
+        } catch (e: Exception) { // Should hopefully only be FlagConflictException
+            e as FlagConflictException
+            log.error { "Flag conflict: ${e.existing.name} from plugin ${e.existing.plugin.description.fullName}" }
         }
     }
 }
