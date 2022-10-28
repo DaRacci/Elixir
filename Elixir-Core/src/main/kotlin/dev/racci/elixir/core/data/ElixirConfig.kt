@@ -17,6 +17,31 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
 
     var modules: Modules = Modules()
 
+    var guiButtons = GUI()
+
+    @ConfigSerializable
+    class GUI : InnerConfig by InnerConfig.Default() {
+        var balance: GUIItemSlot = GUIItemSlot(
+            "itemsadder:elixirmc__opal name:<white>Your Balance:",
+            listOf(
+                PartialComponent.of("<aqua><amount>❖ <white>Opals"),
+                PartialComponent.of(""),
+                PartialComponent.of("<aqua>Get more at <light_purple>store.elixirmc.co"),
+            )
+        )
+        var back: GUIItemSlot = GUIItemSlot("itemsadder:mcicons__icon_cancel")
+        var previousPage: GUIItemSlot = GUIItemSlot("itemsadder:mcicons__icon_left_blue")
+        var nextPage: GUIItemSlot = GUIItemSlot("itemsadder:mcicons__icon_right_blue")
+
+        @ConfigSerializable
+        data class GUIItemSlot(
+            @Required
+            val display: String,
+            val lore: List<PartialComponent> = emptyList(),
+            val commands: List<String> = emptyList()
+        )
+    }
+
     @ConfigSerializable
     class Modules : PropertyFinder<Modules.ModuleConfig>(KeyMode.CAPITALISED) {
         @Comment("The TorchFire module sets entities on fire when attacked with a torch.")
@@ -113,20 +138,20 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
                 var menus: Map<String, Menu> = mapOf(
                     "test" to Menu().apply {
                         title = PartialComponent.of("<gradient:#ED13D9:#12d3ff>Opal Shop")
-                        display = "iasurvival:end_sword"
+                        display = "itemsadder:iasurvival__end_sword"
                         position = "3;5"
 
                         elements = mapOf(
                             "test:1" to Menu.MenuElement().apply {
                                 position = "1;3"
-                                display = "iavehicles:white_go_cart"
-                                item = "iavehicles:orange_go_cart"
+                                display = "itemsadder:iavehicles__white_go_cart"
+                                item = "itemsadder:iavehicles__orange_go_cart"
                                 price = 1025
                                 singleUse = true
                             },
                             "2" to Menu.MenuElement().apply {
                                 position = "1;4"
-                                display = "iavehicles:blue_go_cart"
+                                display = "itemsadder:iavehicles__blue_go_cart"
                                 command = "broadcast <player> bought a blue go cart!"
                                 price = 500
                             }
