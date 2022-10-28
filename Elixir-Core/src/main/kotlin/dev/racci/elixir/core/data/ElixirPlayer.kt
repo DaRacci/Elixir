@@ -44,7 +44,10 @@ class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
 
             if (_purchases.contains(oldString)) {
                 _purchases = _purchases.replace(oldString, newString)
-            } else _purchases += ",$newString"
+            } else {
+                if (_purchases.isNotEmpty()) _purchases += ","
+                _purchases += newString
+            }
 
             return old
         }
