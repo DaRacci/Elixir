@@ -22,21 +22,22 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
     @ConfigSerializable
     class GUI : InnerConfig by InnerConfig.Default() {
         var balance: GUIItemSlot = GUIItemSlot(
-            "itemsadder:elixirmc__opal name:<white>Your Balance:",
+            "itemsadder:elixirmc__opal name:\"<white>Your Balance\"",
+            "-1;1",
             listOf(
                 PartialComponent.of("<aqua><amount>❖ <white>Opals"),
                 PartialComponent.of(""),
-                PartialComponent.of("<aqua>Get more at <light_purple>store.elixirmc.co"),
+                PartialComponent.of("<aqua>Get more at <light_purple>store.elixirmc.co")
             )
         )
-        var back: GUIItemSlot = GUIItemSlot("itemsadder:mcicons__icon_cancel")
-        var previousPage: GUIItemSlot = GUIItemSlot("itemsadder:mcicons__icon_left_blue")
-        var nextPage: GUIItemSlot = GUIItemSlot("itemsadder:mcicons__icon_right_blue")
+        var back: GUIItemSlot = GUIItemSlot("itemsadder:mcicons__icon_cancel", "-1;5")
+        var previousPage: GUIItemSlot = GUIItemSlot("itemsadder:mcicons__icon_left_blue", "-1;4")
+        var nextPage: GUIItemSlot = GUIItemSlot("itemsadder:mcicons__icon_right_blue", "-1;6")
 
         @ConfigSerializable
         data class GUIItemSlot(
-            @Required
-            val display: String,
+            @Required val display: String,
+            @Required val position: String,
             val lore: List<PartialComponent> = emptyList(),
             val commands: List<String> = emptyList()
         )
@@ -139,23 +140,9 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
                     "test" to Menu().apply {
                         title = PartialComponent.of("<gradient:#ED13D9:#12d3ff>Opal Shop")
                         display = "itemsadder:iasurvival__end_sword"
-                        position = "3;5"
+                        position = "2;5"
 
-                        elements = mapOf(
-                            "test:1" to Menu.MenuElement().apply {
-                                position = "1;3"
-                                display = "itemsadder:iavehicles__white_go_cart"
-                                item = "itemsadder:iavehicles__orange_go_cart"
-                                price = 1025
-                                singleUse = true
-                            },
-                            "2" to Menu.MenuElement().apply {
-                                position = "1;4"
-                                display = "itemsadder:iavehicles__blue_go_cart"
-                                command = "broadcast <player> bought a blue go cart!"
-                                price = 500
-                            }
-                        )
+                        elements = emptyMap()
                     }
                 )
             }
@@ -172,11 +159,13 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
 
                 @ConfigSerializable
                 class MenuElement {
-                    @Required var price: Int? = null
+                    var price: Int? = null
 
                     @Required var position: String? = null
 
                     @Required var display: String? = null
+
+                    var guiName: PartialComponent? = null
 
                     var item: String? = null
 

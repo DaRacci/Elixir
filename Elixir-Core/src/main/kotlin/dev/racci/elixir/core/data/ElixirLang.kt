@@ -57,6 +57,7 @@ class ElixirLang : LangConfig<Elixir>() {
 
     @ConfigSerializable
     class OpalShop : InnerLang() {
+        var itemNotPurchasable = PartialComponent.of("<red>This item cannot be purchasable currently!")
         var itemPurchasable = PartialComponent.of("<aqua>Left click to buy!")
         var itemAlreadyPurchased = PartialComponent.of("<red>You have already purchased this item!")
         var itemNotAffordable = arrayListOf(
@@ -68,8 +69,6 @@ class ElixirLang : LangConfig<Elixir>() {
         var purchaseSuccess = PartialComponent.of("<prefix:elixir><aqua>You have successfully purchased <item> for <price>!")
         var purchaseBroadcast = PartialComponent.of("<prefix:elixir><aqua><player> has purchased <item>!")
         var purchaseFailure = PartialComponent.of("<prefix:elixir><red>You need <needed> more opals to purchase <item>!")
-        var purchaseFailureNoPrice = PartialComponent.of("<prefix:elixir><red>Couldn't find price for <item>!")
-        var purchaseFailureNoPermission = PartialComponent.of("<prefix:elixir><red>You do not have permission to purchase <item>!")
         var purchaseFailureNoSpace = PartialComponent.of("<prefix:elixir><red>You do not have enough space in your inventory to purchase <item>!")
     }
 
