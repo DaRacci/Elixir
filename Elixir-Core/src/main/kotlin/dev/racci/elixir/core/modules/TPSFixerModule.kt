@@ -92,12 +92,11 @@ object TPSFixerModule : ModuleActor<ElixirConfig.Modules.TPSFixer>() {
     private fun maybeMutateSpawnRate(curTPS: Double) {
         val multiplier = getConfig().spawnTPSMultiplier.asSequence()
             .sortedByDescending { it.key }
-            .onEach { (targetTPS, multi) -> logger.debug { "Checking if $curTPS is greater than $targetTPS for multi of $multi" } }
             .firstOrNull { (targetTPS, _) -> curTPS >= targetTPS || targetTPS == -1.0 }?.value
 
-        if (multiplier == null || spawnRate == multiplier) {
-            logger.debug { "No multiplier change found for $curTPS" }
-        } else logger.info { "TPS is $curTPS; spawn rate = $spawnRate" }
+        if (multiplier != null && spawnRate != multiplier) {
+            logger.info { "TPS is $curTPS; spawn rate = $spawnRate" }
+        }
     }
 
     private fun Entity.isValuable() = when (this) {
