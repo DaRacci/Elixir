@@ -82,7 +82,7 @@ object HubModule : ModuleActor<ElixirConfig.Modules.Hub>() {
         player.fallDistance = 0f
 
         with(getAttribute(player, Attribute.GENERIC_MOVEMENT_SPEED)) {
-            this.addModifier(AttributeModifier(hubKey.asString(), config.speedMultiplier, AttributeModifier.Operation.ADD_SCALAR))
+            this.addModifier(AttributeModifier(hubKey.asString(), config.speedMultiplier - 1, AttributeModifier.Operation.MULTIPLY_SCALAR_1))
         }
 
         player.addPotionEffect(PotionEffect(PotionEffectType.JUMP, Int.MAX_VALUE, config.jumpLevel - 1, true, false, false, hubKey))
