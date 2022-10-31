@@ -7,6 +7,9 @@ import dev.racci.elixir.core.data.ElixirLang
 import dev.racci.elixir.core.data.ElixirPlayer
 import dev.racci.elixir.core.services.ElixirStorageService
 import dev.racci.minix.api.extensions.event
+import dev.racci.minix.api.extensions.message
+import dev.racci.minix.api.extensions.scheduler
+import dev.racci.minix.api.extensions.server
 import net.kyori.adventure.text.Component
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
@@ -14,13 +17,16 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.koin.core.component.get
+import kotlin.time.Duration.Companion.milliseconds
 
 object ConnectionMessageModule : ModuleActor<ElixirConfig.Modules.ConnectionMessage>() {
 
     override suspend fun load() {
         event<PlayerJoinEvent>(EventPriority.MONITOR, true) {
-            Thread.sleep(250) // Wait for Carbon to change the player's display name
-            this.joinMessage(message(player) { this.joinMessage ?: get<ElixirLang>().defaultJoinMessage["player" to { player.displayName() }] })
+            joinMessage(null)
+            scheduler {
+                message(player) { this.joinMessage ?: get<ElixirLang>().defaultJoinMessage["player" to { player.displayName() }] }?.message(server)
+            }.runAsyncTaskLater(plugin, 250.milliseconds) // Wait for Carbon to change the player's display name
         }
 
         event<PlayerQuitEvent>(EventPriority.MONITOR, true) {
