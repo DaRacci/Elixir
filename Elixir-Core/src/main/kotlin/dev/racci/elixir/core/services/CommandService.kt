@@ -21,6 +21,7 @@ import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
 import dev.racci.elixir.core.data.ElixirPlayer
 import dev.racci.elixir.core.modules.OpalsModule
+import dev.racci.elixir.core.modules.OpalsModule.format
 import dev.racci.minix.api.annotations.MappedExtension
 import dev.racci.minix.api.extension.Extension
 import dev.racci.minix.api.extensions.message
@@ -85,6 +86,13 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
         .withPermission(ElixirPermission.CONNECTION_TOGGLE_OTHERS.permission)
         .withAliases("p")
         .withArgument(PlayerArgument.newBuilder<Player>("player").asOptional().build())
+    private val opalIntArg = IntegerArgument.newBuilder<CommandSender?>("amount").withMin(0).withSuggestionsProvider { _, _ ->
+        val suggestions = arrayOfNulls<String>(25)
+        repeat(25) { i ->
+            suggestions[i] = (i * 25).toString()
+        }
+        suggestions.asList()
+    }
 
     override suspend fun handleEnable() {
         registerOpalCommands()
@@ -121,7 +129,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
 
                     elixirLang.commands.opalsGet[
                         "target" to { getTargetComponent(target, ctx, true) },
-                        "amount" to { amount }
+                        "amount" to { amount.format() }
                     ] message ctx.sender
                 }
             }
@@ -129,7 +137,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
             this.registerCopy("set", RichDescription.of(Component.empty())) {
                 commandPermission = ElixirPermission.OPALS_MUTATE.permission
                 mutate { it.flag(playerFlag) }
-                argument(IntegerArgument.of("amount"))
+                argument(opalIntArg)
                 suspendingHandler { ctx ->
                     val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
                     val amount = ctx.get<Int>("amount")
@@ -153,7 +161,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
             this.registerCopy("give", RichDescription.of(Component.empty())) {
                 commandPermission = ElixirPermission.OPALS_MUTATE.permission
                 mutate { it.flag(playerFlag) }
-                argument(IntegerArgument.of("amount"))
+                argument(opalIntArg)
                 suspendingHandler { ctx ->
                     val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
                     val amount = ctx.get<Int>("amount")
@@ -177,7 +185,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
             this.registerCopy("take", RichDescription.of(Component.empty())) {
                 commandPermission = ElixirPermission.OPALS_MUTATE.permission
                 mutate { it.flag(playerFlag) }
-                argument(IntegerArgument.of("amount"))
+                argument(opalIntArg)
                 suspendingHandler { ctx ->
                     val target = ctx.flags().getValue<Player>("player").getOrElse { ctx.sender as Player }
                     val amount = ctx.get<Int>("amount")
