@@ -71,6 +71,8 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
         @Comment("Settings for handling hub worlds.")
         var hub = Hub()
 
+        var terix = Terix()
+
         @ConfigSerializable
         class TorchFire : ModuleConfig() {
             var burnTicks: Int = 100
@@ -188,6 +190,12 @@ class ElixirConfig : MinixConfig<Elixir>(true) {
             @Comment("The jump level for players within the hub.")
             var jumpLevel: Int = 2
         }
+
+        @ConfigSerializable
+        data class Terix(
+            @Comment("What regions to protect against oxygen lost and other origin debuffs.")
+            val protectedRegions: List<String> = listOf("Spawn")
+        ) : ModuleConfig()
 
         open class ModuleConfig(var enabled: Boolean = true)
     }

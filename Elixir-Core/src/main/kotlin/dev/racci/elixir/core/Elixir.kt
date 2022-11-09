@@ -8,6 +8,7 @@ import dev.racci.elixir.core.modules.EnhanceBeaconsModule
 import dev.racci.elixir.core.modules.HubModule
 import dev.racci.elixir.core.modules.OpalsModule
 import dev.racci.elixir.core.modules.TPSFixerModule
+import dev.racci.elixir.core.modules.TerixModule
 import dev.racci.elixir.core.modules.TorchFireModule
 import dev.racci.minix.api.annotations.MappedPlugin
 import dev.racci.minix.api.plugin.MinixPlugin
@@ -37,6 +38,7 @@ class Elixir : MinixPlugin() {
         OpalsModule.tryLoad()
         EggTrackerModule.tryLoad()
         HubModule.tryLoad()
+        TerixModule.tryLoad()
     }
 
     private fun registerLandsFlag() {
