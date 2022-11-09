@@ -1,5 +1,8 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder
 
+// Workaround for (https://youtrack.jetbrains.com/issue/KTIJ-19369)
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.minix.kotlin)
     alias(libs.plugins.minix.copyjar)
@@ -15,12 +18,13 @@ bukkit {
     apiVersion = "1.19"
     version = rootProject.version.toString()
     main = "dev.racci.elixir.core.Elixir"
-    load = net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.STARTUP
+    load = PluginLoadOrder.POSTWORLD
     depend = listOf("Minix")
     softDepend = listOf(
         "PlaceholderAPI",
         "Lands",
-        "ProtocolLib"
+        "ProtocolLib",
+        "PlayerParticles"
     )
     website = "https://elixir.racci.dev/"
     permissions.create("elixir.connection-message") {
@@ -65,8 +69,9 @@ tasks {
 }
 
 subprojects {
-    apply(plugin = "dev.racci.minix.kotlin")
-    apply(plugin = "dev.racci.minix.purpurmc")
+    apply<Dev_racci_minix_kotlinPlugin>()
+    apply<Dev_racci_minix_purpurmcPlugin>()
+    apply<Dev_racci_minix_nmsPlugin>()
 
     dependencies {
         compileOnly(rootProject.libs.bundles.kotlin)

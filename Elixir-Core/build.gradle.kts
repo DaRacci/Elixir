@@ -1,12 +1,8 @@
-plugins {
-    kotlin("plugin.serialization")
-    id("dev.racci.minix.nms")
-}
-
 repositories {
     mavenLocal()
     maven("https://jitpack.io")
     maven("https://repo.dmulloy2.net/repository/public/")
+    maven("https://repo.rosewooddev.io/repository/public/")
 }
 
 dependencies {
@@ -22,6 +18,7 @@ dependencies {
     compileOnly("com.willfp:EcoBosses:8.89.0")
     compileOnly("org.incendo.interfaces:interfaces-paper:1.0.0-SNAPSHOT")
     compileOnly("org.incendo.interfaces:interfaces-kotlin:1.0.0-SNAPSHOT")
-
-    compileOnly("com.h2database:h2:2.1.214")
+    compileOnly("dev.esophose:playerparticles:8.2")
+    compileOnly("com.github.CodingAir:TradeSystem:v2.1.3")
+    compileOnly("dev.racci:Terix:1.1.1-SNAPSHOT")
 }

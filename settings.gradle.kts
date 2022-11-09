@@ -1,7 +1,9 @@
+@file:Suppress("UnstableApiUsage")
+
 enableFeaturePreview("VERSION_CATALOGS")
+
 pluginManagement {
     repositories {
-        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
         maven("https://repo.racci.dev/releases")
@@ -14,12 +16,15 @@ dependencyResolutionManagement {
         maven("https://repo.racci.dev/releases")
     }
 
-    val minixConventions: String by settings
     versionCatalogs.create("libs") {
-        from("dev.racci:catalog:$minixConventions")
+        val minixVersion: String by settings
+        val kotlinVersion: String by settings
+        val conventions = kotlinVersion.plus("-").plus(minixVersion.substringAfterLast('.'))
+        from("dev.racci:catalog:$conventions")
     }
 }
 
-include("Elixir-API", "Elixir-Core")
-
 rootProject.name = "Elixir"
+
+include("Elixir-API")
+include("Elixir-Core")
