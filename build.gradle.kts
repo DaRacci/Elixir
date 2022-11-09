@@ -24,7 +24,8 @@ bukkit {
         "PlaceholderAPI",
         "Lands",
         "ProtocolLib",
-        "PlayerParticles"
+        "PlayerParticles",
+        "CMI"
     )
     website = "https://elixir.racci.dev/"
     permissions.create("elixir.connection-message") {
