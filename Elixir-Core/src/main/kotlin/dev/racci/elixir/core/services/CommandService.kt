@@ -27,11 +27,15 @@ import dev.racci.minix.api.extension.Extension
 import dev.racci.minix.api.extensions.message
 import dev.racci.minix.api.extensions.parse
 import dev.racci.minix.api.extensions.reflection.castOrThrow
+import dev.racci.minix.api.extensions.server
 import dev.racci.minix.api.services.DataService
 import dev.racci.minix.api.services.DataService.Companion.inject
 import dev.racci.minix.api.utils.Closeable
 import dev.racci.minix.api.utils.adventure.PartialComponent
 import dev.racci.minix.core.services.DataServiceImpl
+import io.papermc.paper.world.MoonPhase
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -97,6 +101,23 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
     override suspend fun handleEnable() {
         registerOpalCommands()
         registerJoinLeaveMessage()
+
+        manager.get().buildAndRegister(
+            "howl",
+            RichDescription.empty(),
+            emptyArray()
+        ) {
+            this.mutate { it.flag(playerFlag) }
+            this.handler { ctx ->
+                if (server.worlds.first().moonPhase != MoonPhase.FULL_MOON) {
+                    elixirLang.commands.howlNotFullMoon.get() message ctx.sender
+                    return@handler
+                }
+
+                val sound = Sound.sound(Key.key("entity.wolf.howl"), Sound.Source.MASTER, 1f, 0.7f)
+                server.playSound(sound, Sound.Emitter.self())
+            }
+        }
     }
 
     @OptIn(ExperimentalStdlibApi::class)

@@ -53,6 +53,8 @@ class ElixirLang : LangConfig<Elixir>() {
         var invalidSender = PartialComponent.of("<red>You must be a player to execute this command!")
         var invalidPlayer = PartialComponent.of("<red>Couldn't find player <player>!")
         var missingArgument = PartialComponent.of("<red>Missing argument <arg>!")
+
+        var howlNotFullMoon = PartialComponent.of("<prefix:elixir><red>You can only howl during a full moon!")
     }
 
     @ConfigSerializable
@@ -75,5 +77,6 @@ class ElixirLang : LangConfig<Elixir>() {
     @ConfigSerializable
     class EggTracker : InnerLang() {
         var cannotDrop = PartialComponent.of("<prefix:elixir><red>You cannot drop the dragon egg!")
+        var despawned = PartialComponent.of("<prefix:elixir><red>The dragon egg has despawned!")
     }
 }
