@@ -9,9 +9,11 @@ fi
 git resign
 git push origin v"${2}" || exit 1 # Push the new version tag for the release
 
+git clean build
+
 PROJECT=Elixir
 SEMIPATH=build/libs/"$PROJECT"
-cog changelog v"${1}"..v"${2}" | gh release create "v$2" -F - -t "${PROJECT} release $2" $SEMIPATH-"$2".jar "${PROJECT}"-Core/$SEMIPATH-Core-"$2".jar
+cog changelog v"${1}"..v"${2}" | gh release create "v$2" -F - -t "${PROJECT} release $2" $SEMIPATH-"$2".jar "${PROJECT}"-API/$SEMIPATH-API-"$2".jar "${PROJECT}"-Core/$SEMIPATH-Core-"$2".jar
 
 git push origin master || exit 1 # Push the new version tag for the release
 
