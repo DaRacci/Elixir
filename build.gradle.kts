@@ -52,15 +52,15 @@ bukkit {
 
 dependencies {
     implementation(project(":Elixir-Core"))
-    implementation("org.incendo.interfaces:interfaces-paper:1.0.0-SNAPSHOT")
-    implementation("org.incendo.interfaces:interfaces-kotlin:1.0.0-SNAPSHOT")
+    implementation(libs.minecraft.interfaces.paper)
+    implementation(libs.minecraft.interfaces.kotlin)
 }
 
 tasks {
     shadowJar {
-        dependencyFilter.include {
-            it.moduleGroup == "dev.racci" ||
-                it.moduleGroup == "org.incendo.interfaces"
+        dependencyFilter.include { dep ->
+            dep.moduleGroup == project.group ||
+                dep.moduleGroup == libs.minecraft.interfaces.paper.get().module.group
         }
     }
 
