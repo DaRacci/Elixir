@@ -47,7 +47,7 @@ import org.koin.core.component.get
 import kotlin.jvm.optionals.getOrElse
 
 @MappedExtension(Elixir::class, "Command Service", [ElixirStorageService::class])
-class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
+public class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
     private val elixirLang by DataService.inject().inject<ElixirLang>()
     private val manager = object : Closeable<PaperCommandManager<CommandSender>>() {
         override fun create(): PaperCommandManager<CommandSender> {
@@ -425,7 +425,7 @@ class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
         return target
     }
 
-    enum class ConnectionMessage(val langFunc: ElixirLang.() -> PartialComponent) {
+    public enum class ConnectionMessage(public val langFunc: ElixirLang.() -> PartialComponent) {
         JOIN(ElixirLang::defaultJoinMessage),
         LEAVE(ElixirLang::defaultLeaveMessage);
     }

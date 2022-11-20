@@ -3,7 +3,7 @@ package dev.racci.elixir.core.constants
 import cloud.commandframework.permission.CommandPermission
 import cloud.commandframework.permission.Permission
 
-enum class ElixirPermission(val permissionString: String) {
+public enum class ElixirPermission(public val permissionString: String) {
     CONNECTION_MESSAGE("elixir.connection-message"),
     CONNECTION_TOGGLE("elixir.connection-message.toggle"),
     CONNECTION_TOGGLE_OTHERS("elixir.connection-message.toggle.others"),
@@ -17,5 +17,5 @@ enum class ElixirPermission(val permissionString: String) {
     RELOAD("elixir.reload"),
     AEHTER_MUTATE("elixir.aether.mutate");
 
-    val permission: CommandPermission = Permission.of(permissionString)
+    public val permission: CommandPermission = Permission.of(permissionString)
 }

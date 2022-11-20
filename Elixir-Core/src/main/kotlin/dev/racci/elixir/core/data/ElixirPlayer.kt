@@ -8,30 +8,30 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
 import java.util.UUID
 
-class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
+public class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
     private var _joinMessage by ElixirUser.joinMessage
     private var _leaveMessage by ElixirUser.leaveMessage
     private var _purchases by ElixirUser.purchases
 
-    var disableConnectionMessages by ElixirUser.disableConnectionMessages
+    public var disableConnectionMessages: Boolean by ElixirUser.disableConnectionMessages
 
-    var joinMessage: Component?
+    public var joinMessage: Component?
         get() = deserialize(_joinMessage)
         set(value) {
             _joinMessage = serialize(value)
         }
 
-    var leaveMessage: Component?
+    public var leaveMessage: Component?
         get() = deserialize(_leaveMessage)
         set(value) {
             _leaveMessage = serialize(value)
         }
 
-    var opals: Int by ElixirUser.opals
+    public var opals: Int by ElixirUser.opals
 
-    val purchases: MutableMap<String, Int> by lazy(::PurchaseMap)
+    public val purchases: MutableMap<String, Int> by lazy(::PurchaseMap)
 
-    inner class PurchaseMap : MutableMap<String, Int> by (
+    public inner class PurchaseMap : MutableMap<String, Int> by (
         _purchases.split(",")
             .map { it.split(":", limit = 2) }
             .filter { it.size == 2 }
@@ -80,5 +80,5 @@ class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
         val purchases = text("purchases").default("")
     }
 
-    companion object : UUIDEntityClass<ElixirPlayer>(ElixirUser)
+    public companion object : UUIDEntityClass<ElixirPlayer>(ElixirUser)
 }

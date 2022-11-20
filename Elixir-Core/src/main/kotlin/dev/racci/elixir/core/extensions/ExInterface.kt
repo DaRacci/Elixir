@@ -5,18 +5,18 @@ import org.bukkit.Material
 import org.incendo.interfaces.core.util.Vector2
 import org.incendo.interfaces.kotlin.paper.MutableChestPaneView
 
-fun MutableChestPaneView.mask(
+public fun MutableChestPaneView.mask(
     rawMask: String,
     replacements: List<Material> = InterfaceUtils.defaultReplacements
-) = InterfaceUtils.mask(this, rawMask, replacements)
+): Unit = InterfaceUtils.mask(this, rawMask, replacements)
 
-fun String?.toVec(
+public fun String?.toVec(
     rows: Int = -1,
     xOffset: Int = 0,
     yOffset: Int = 1
 ): Vector2 = InterfaceUtils.toVec(this, rows, xOffset, yOffset)
 
-fun Int.fromIndex(
+public fun Int.fromIndex(
     rowOffset: Int = 0,
     colOffset: Int = 0
 ): Vector2 = InterfaceUtils.toVec(this, rowOffset, colOffset)

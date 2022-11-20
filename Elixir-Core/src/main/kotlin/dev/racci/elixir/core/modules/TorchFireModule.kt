@@ -8,7 +8,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 
-object TorchFireModule : ModuleActor<ElixirConfig.Modules.TorchFire>() {
+public object TorchFireModule : ModuleActor<ElixirConfig.Modules.TorchFire>() {
     private val torches by lazy {
         persistentListOf(
             Material.SOUL_TORCH,

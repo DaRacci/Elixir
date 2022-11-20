@@ -84,4 +84,6 @@ subprojects {
         compileOnly(rootProject.libs.minecraft.minix)
         compileOnly(rootProject.libs.minecraft.minix.core)
     }
+
+    kotlin.explicitApi()
 }

@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
-object AetherModule : ModuleActor<ElixirConfig.Modules.Aether>() {
+public object AetherModule : ModuleActor<ElixirConfig.Modules.Aether>() {
     override suspend fun load() {
         event(EventPriority.HIGHEST, true, block = ::handleVoid)
 

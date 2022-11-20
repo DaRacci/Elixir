@@ -11,12 +11,12 @@ import org.incendo.interfaces.core.view.InterfaceView
 import org.incendo.interfaces.core.view.InterfaceViewer
 import kotlin.math.ceil
 
-typealias TransformFunction<S, T, U> = (RenderablePaginatedTransform<S, T, U>) -> S?
-typealias RenderFunction<S, T, U> = (InterfaceView<T, U>) -> S
+public typealias TransformFunction<S, T, U> = (RenderablePaginatedTransform<S, T, U>) -> S?
+public typealias RenderFunction<S, T, U> = (InterfaceView<T, U>) -> S
 
 // TODO -> Static elements which are modified.
 /** Custom implementation of [PaginatedTransform] that allows rendering elements as well as the buttons. */
-class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : InterfaceViewer>(
+public class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : InterfaceViewer>(
     private val min: Vector2,
     private val max: Vector2,
     private val elementsSupplier: () -> List<RenderFunction<S, T, U>>
@@ -48,7 +48,7 @@ class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : Interfac
      * @param max      the coordinates for the maximum (inclusive) point where the elements are rendered
      * @param elements the elements
      */
-    constructor(
+    public constructor(
         min: Vector2,
         max: Vector2,
         elements: List<RenderFunction<S, T, U>>
@@ -63,7 +63,7 @@ class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : Interfac
      *
      * @return an Integer InterfaceProperty
      */
-    fun pageProperty(): InterfaceProperty<Int> {
+    public fun pageProperty(): InterfaceProperty<Int> {
         return pageProperty
     }
 
@@ -118,7 +118,7 @@ class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : Interfac
      *
      * @return the current page (0-indexed)
      */
-    fun page():
+    public fun page():
         @IntRange(from = 0)
         Int {
         return pageProperty.get()
@@ -129,7 +129,7 @@ class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : Interfac
      *
      * @return the maximum page (0-indexed)
      */
-    fun maxPage():
+    public fun maxPage():
         @IntRange(from = 0)
         Int {
         return (pageSupplier() - 1).coerceAtLeast(0)
@@ -140,7 +140,7 @@ class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : Interfac
      *
      * @return the number of pages
      */
-    fun pages():
+    public fun pages():
         @IntRange(from = 1)
         Int {
         return pageSupplier()
@@ -151,7 +151,7 @@ class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : Interfac
      *
      * @return dimensions of the paginated view
      */
-    fun dimensions(): Vector2 {
+    public fun dimensions(): Vector2 {
         return dim
     }
 
@@ -161,7 +161,7 @@ class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : Interfac
      * @param position the position of the element
      * @param builder  the builder that builds the element
      */
-    fun backwardElement(
+    public fun backwardElement(
         position: Vector2,
         builder: TransformFunction<S, T, U>
     ) {
@@ -175,7 +175,7 @@ class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : Interfac
      * @param position the position of the element
      * @param builder  the builder that builds the element
      */
-    fun forwardElement(
+    public fun forwardElement(
         position: Vector2,
         builder: TransformFunction<S, T, U>
     ) {
@@ -188,7 +188,7 @@ class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : Interfac
      *
      * @throws IllegalStateException if the previous page does not exist
      */
-    fun previousPage() {
+    public fun previousPage() {
         check(page() != 0) {
             String.format(
                 "Page number is out of bounds. Must be in the range [%d, %d].",
@@ -204,7 +204,7 @@ class RenderablePaginatedTransform<S : Element, T : GridPane<T, S>, U : Interfac
      *
      * @throws IllegalStateException if the previous next does not exist
      */
-    fun nextPage() {
+    public fun nextPage() {
         check(page() != maxPage()) {
             String.format(
                 "Page number is out of bounds. Must be in the range [%d, %d].",

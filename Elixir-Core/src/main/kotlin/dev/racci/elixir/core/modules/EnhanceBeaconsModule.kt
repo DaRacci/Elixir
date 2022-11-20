@@ -6,7 +6,7 @@ import dev.racci.minix.api.extensions.event
 import org.bukkit.event.EventPriority
 import org.bukkit.potion.PotionEffect
 
-object EnhanceBeaconsModule : ModuleActor<ElixirConfig.Modules.EnhanceBeacons>() {
+public object EnhanceBeaconsModule : ModuleActor<ElixirConfig.Modules.EnhanceBeacons>() {
     override suspend fun load() {
         event<BeaconEffectEvent>(EventPriority.HIGHEST, true) {
             if (!getConfig().removeParticles) return@event

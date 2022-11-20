@@ -21,7 +21,7 @@ import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-object TPSFixerModule : ModuleActor<ElixirConfig.Modules.TPSFixer>() {
+public object TPSFixerModule : ModuleActor<ElixirConfig.Modules.TPSFixer>() {
     private var spawnRate = 1.0f
     private var spawnRateTask = -1
 

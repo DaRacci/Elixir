@@ -8,21 +8,21 @@ import dev.racci.minix.api.utils.kotlin.ifTrue
 import org.koin.core.component.get
 import org.koin.core.component.inject
 
-sealed class ModuleActor<M : ElixirConfig.Modules.ModuleConfig> : WithPlugin<Elixir> {
+public sealed class ModuleActor<M : ElixirConfig.Modules.ModuleConfig> : WithPlugin<Elixir> {
     private val path: String by lazy { this::class.simpleName!!.replace(Regex("Module|Actor|_"), "").uppercase() }
 
     override val plugin: Elixir by inject()
 
-    open suspend fun shouldLoad(): Boolean = getConfig().enabled
+    public open suspend fun shouldLoad(): Boolean = getConfig().enabled
 
-    abstract suspend fun load()
+    public abstract suspend fun load()
 
-    open suspend fun close() = Unit
+    public open suspend fun close(): Unit = Unit
 
-    suspend fun tryLoad() = this.shouldLoad().ifTrue {
+    public suspend fun tryLoad(): Boolean = this.shouldLoad().ifTrue {
         logger.debug { "Loading ${this::class.simpleName}" }
         this.load()
     }
 
-    protected fun getConfig() = get<ElixirConfig>().modules[path].castOrThrow<M>()
+    protected fun getConfig(): M = get<ElixirConfig>().modules[path].castOrThrow<M>()
 }

@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.koin.core.component.get
 import kotlin.time.Duration.Companion.milliseconds
 
-object ConnectionMessageModule : ModuleActor<ElixirConfig.Modules.ConnectionMessage>() {
+public object ConnectionMessageModule : ModuleActor<ElixirConfig.Modules.ConnectionMessage>() {
 
     override suspend fun load() {
         event<PlayerJoinEvent>(EventPriority.MONITOR, true) {

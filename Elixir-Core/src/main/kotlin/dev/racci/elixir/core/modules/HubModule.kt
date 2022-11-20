@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
-object HubModule : ModuleActor<ElixirConfig.Modules.Hub>() {
+public object HubModule : ModuleActor<ElixirConfig.Modules.Hub>() {
     private val hubKey = "elixir:hub_modifier".toNamespacedKey()
 
     override suspend fun load() {

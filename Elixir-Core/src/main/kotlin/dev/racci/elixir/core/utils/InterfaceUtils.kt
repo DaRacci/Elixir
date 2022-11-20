@@ -8,14 +8,14 @@ import org.incendo.interfaces.kotlin.paper.MutableChestPaneView
 import org.incendo.interfaces.kotlin.paper.asElement
 import kotlin.jvm.Throws
 
-object InterfaceUtils {
-    val defaultReplacements: List<Material> = listOf(
+public object InterfaceUtils {
+    public val defaultReplacements: List<Material> = listOf(
         Material.LIGHT_BLUE_STAINED_GLASS_PANE,
         Material.BLACK_STAINED_GLASS_PANE,
         Material.GRAY_STAINED_GLASS_PANE
     )
 
-    fun mask(
+    public fun mask(
         chestView: MutableChestPaneView,
         rawMask: String,
         replacements: List<Material> = defaultReplacements
@@ -38,7 +38,7 @@ object InterfaceUtils {
 
     /** Gets a Vector2 from a string in the format of "x;y". */
     @Throws(IllegalArgumentException::class, NumberFormatException::class)
-    fun toVec(
+    public fun toVec(
         string: String?,
         rows: Int = -1,
         xOffset: Int = 0,
@@ -54,7 +54,7 @@ object InterfaceUtils {
         return Vector2.at(y, x)
     }
 
-    fun toVec(
+    public fun toVec(
         index: Int,
         rowOffset: Int = 0,
         colOffset: Int = 0

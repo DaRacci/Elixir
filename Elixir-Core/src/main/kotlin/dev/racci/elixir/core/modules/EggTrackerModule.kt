@@ -27,7 +27,7 @@ import org.koin.core.component.get
 // TODO -> Command for listing who has the egg.
 // TODO -> Cannot remove from inventory and will drop on death.
 // TODO -> If an egg despawns the next dragon killed drops an egg
-object EggTrackerModule : ModuleActor<ElixirConfig.Modules.EggTracker>() {
+public object EggTrackerModule : ModuleActor<ElixirConfig.Modules.EggTracker>() {
     private var dropEgg: Boolean = false
 
     override suspend fun load() {

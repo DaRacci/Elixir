@@ -8,11 +8,9 @@ import dev.racci.minix.api.extensions.event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
-import org.jetbrains.exposed.sql.transactions.transaction
 
 @MappedExtension(Elixir::class, "Listener Service")
-class ListenerService(override val plugin: Elixir) : Extension<Elixir>() {
-
+public class ListenerService(override val plugin: Elixir) : Extension<Elixir>() {
     override suspend fun handleEnable() {
         event<BlockFadeEvent>(
             priority = EventPriority.HIGH,

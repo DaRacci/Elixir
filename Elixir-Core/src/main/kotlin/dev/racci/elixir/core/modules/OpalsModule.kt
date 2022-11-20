@@ -79,7 +79,7 @@ private class CommandShopItem(
     }
 }
 
-object OpalsModule : ModuleActor<ElixirConfig.Modules.Opals>() {
+public object OpalsModule : ModuleActor<ElixirConfig.Modules.Opals>() {
     private val playerArgumentKey = ArgumentKey.of("player", Player::class.java)
     private val opalsArgumentKey = ArgumentKey.of("opals", Int::class.java)
     internal val menus = mutableMapOf<String, Interface<*, PlayerViewer>>()
@@ -101,7 +101,7 @@ object OpalsModule : ModuleActor<ElixirConfig.Modules.Opals>() {
         }
     }
 
-    fun openShop(
+    public fun openShop(
         player: Player,
         shopID: String = "main"
     ): Boolean {
@@ -443,7 +443,7 @@ object OpalsModule : ModuleActor<ElixirConfig.Modules.Opals>() {
         }
     }
 
-    fun Int.format(): String {
+    public fun Int.format(): String {
         return this.toString().reversed().chunked(3).joinToString(",").reversed()
     }
 }
