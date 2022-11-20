@@ -1,5 +1,6 @@
 package dev.racci.elixir.core
 
+import com.willfp.eco.core.items.isEmpty
 import dev.racci.elixir.core.modules.AetherModule
 import dev.racci.elixir.core.modules.ConnectionMessageModule
 import dev.racci.elixir.core.modules.DrownConcreteModule
@@ -11,19 +12,30 @@ import dev.racci.elixir.core.modules.TPSFixerModule
 import dev.racci.elixir.core.modules.TerixModule
 import dev.racci.elixir.core.modules.TorchFireModule
 import dev.racci.minix.api.annotations.MappedPlugin
+import dev.racci.minix.api.extensions.pdc
 import dev.racci.minix.api.plugin.MinixPlugin
+import dev.racci.tentacles.Tentacles
 import me.angeschossen.lands.api.exceptions.FlagConflictException
 import me.angeschossen.lands.api.flags.Flag
 import me.angeschossen.lands.api.flags.types.LandFlag
 import me.angeschossen.lands.api.integration.LandsIntegration
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 import org.incendo.interfaces.paper.PaperInterfaceListeners
 
 @MappedPlugin(-1, Elixir::class)
-class Elixir : MinixPlugin() {
+public class Elixir : MinixPlugin() {
     override suspend fun handleLoad() {
         this.registerLandsFlag()
+
+        if (tentaclesInstalled) {
+            val multiToolKey = NamespacedKey(this, "multi-tool")
+            Tentacles.addGlobalBlockDropCondition(multiToolKey) { player, state, itemStack ->
+                if (itemStack.isEmpty || !itemStack.pdc.has(multiToolKey)) return@addGlobalBlockDropCondition null
+                true
+            }
+        }
     }
 
     override suspend fun handleEnable() {
@@ -67,5 +79,9 @@ class Elixir : MinixPlugin() {
             e as FlagConflictException
             log.error { "Flag conflict: ${e.existing.name} from plugin ${e.existing.plugin.description.fullName}" }
         }
+    }
+
+    public companion object {
+        public val tentaclesInstalled: Boolean = runCatching { Class.forName("dev.racci.tentacles.Tentacles") }.isSuccess
     }
 }
