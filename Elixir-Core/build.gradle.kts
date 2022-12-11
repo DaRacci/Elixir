@@ -19,6 +19,6 @@ dependencies {
     compileOnly(libs.minecraft.interfaces.paper)
     compileOnly(libs.minecraft.interfaces.kotlin)
     compileOnly("dev.esophose:playerparticles:8.2")
-    compileOnly("com.github.CodingAir:TradeSystem:v2.1.3")
+    compileOnly("com.github.CodingAir:TradeSystem:3.1.2")
     compileOnly("dev.racci:Terix:1.1.1-SNAPSHOT")
 }
