@@ -190,6 +190,12 @@ public class ElixirConfig : MinixConfig<Elixir>(true) {
             val protectedRegions: List<String> = listOf("Spawn")
         ) : ModuleConfig()
 
+        @ConfigSerializable
+        public class SleepWithYoHomies : ModuleConfig()
+
+        @ConfigSerializable
+        public class ResourceChallenge : ModuleConfig()
+
         public open class ModuleConfig(public var enabled: Boolean = true)
     }
 }
