@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerTeleportEvent
 public object TerixModule : ModuleActor<ElixirConfig.Modules.Terix>() {
     override suspend fun load() {
         event<EntityAirChangeEvent>(EventPriority.HIGHEST, true) {
-            (this.entity as LivingEntity).ifWithinProtectedRegion(this::cancel)
+            (this.entity as? LivingEntity)?.ifWithinProtectedRegion(this::cancel)
         }
 
         event<PlayerTeleportEvent>(EventPriority.MONITOR, true) { this.player.maybeResetAir() }
