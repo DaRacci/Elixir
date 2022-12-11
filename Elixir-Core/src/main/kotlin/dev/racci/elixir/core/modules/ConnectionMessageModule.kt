@@ -4,7 +4,7 @@ import com.Zrips.CMI.CMI
 import dev.racci.elixir.core.constants.ElixirPermission
 import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
-import dev.racci.elixir.core.data.ElixirPlayer
+import dev.racci.elixir.api.data.ElixirPlayer
 import dev.racci.elixir.core.services.ElixirStorageService
 import dev.racci.minix.api.extensions.event
 import dev.racci.minix.api.extensions.message

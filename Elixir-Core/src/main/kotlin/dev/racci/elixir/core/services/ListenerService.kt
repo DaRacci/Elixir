@@ -1,7 +1,7 @@
 package dev.racci.elixir.core.services
 
+import dev.racci.elixir.api.data.ElixirPlayer
 import dev.racci.elixir.core.Elixir
-import dev.racci.elixir.core.data.ElixirPlayer
 import dev.racci.minix.api.annotations.MappedExtension
 import dev.racci.minix.api.extension.Extension
 import dev.racci.minix.api.extensions.event

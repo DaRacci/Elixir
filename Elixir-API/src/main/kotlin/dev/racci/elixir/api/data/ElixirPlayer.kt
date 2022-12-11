@@ -1,19 +1,23 @@
-package dev.racci.elixir.core.data
+package dev.racci.elixir.api.data
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.Column
 import java.util.UUID
 
-public class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
-    private var _joinMessage by ElixirUser.joinMessage
-    private var _leaveMessage by ElixirUser.leaveMessage
-    private var _purchases by ElixirUser.purchases
+public class ElixirPlayer private constructor(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
+    public companion object : UUIDEntityClass<ElixirPlayer>(ElixirPlayers)
 
-    public var disableConnectionMessages: Boolean by ElixirUser.disableConnectionMessages
+    private var _joinMessage by ElixirPlayers.joinMessage
+    private var _leaveMessage by ElixirPlayers.leaveMessage
+    private var _purchases by ElixirPlayers.purchases
+
+    public var disableConnectionMessages: Boolean by ElixirPlayers.disableConnectionMessages
 
     public var joinMessage: Component?
         get() = deserialize(_joinMessage)
@@ -27,9 +31,9 @@ public class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
             _leaveMessage = serialize(value)
         }
 
-    public var opals: Int by ElixirUser.opals
+    public var opals: Int by ElixirPlayers.opals
 
-    public val purchases: MutableMap<String, Int> by lazy(::PurchaseMap)
+    public val purchases: MutableMap<String, Int> by lazy(ElixirPlayer::PurchaseMap)
 
     public inner class PurchaseMap : MutableMap<String, Int> by (
         _purchases.split(",")
@@ -71,14 +75,13 @@ public class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
         return GsonComponentSerializer.gson().serialize(value)
     }
 
-    internal object ElixirUser : UUIDTable("user") {
-        val joinMessage = text("join_message").nullable().default(null)
-        val leaveMessage = text("leave_message").nullable().default(null)
-        val disableConnectionMessages = bool("disable_connection_messages").default(false)
+    @ApiStatus.Internal
+    public object ElixirPlayers : UUIDTable("user") {
+        public val joinMessage: Column<String?> = text("join_message").nullable().default(null)
+        public val leaveMessage: Column<String?> = text("leave_message").nullable().default(null)
+        public val disableConnectionMessages: Column<Boolean> = bool("disable_connection_messages").default(false)
 
-        val opals = integer("opals").default(0)
-        val purchases = text("purchases").default("")
+        public val opals: Column<Int> = integer("opals").default(0)
+        public val purchases: Column<String> = text("purchases").default("")
     }
-
-    public companion object : UUIDEntityClass<ElixirPlayer>(ElixirUser)
 }

@@ -19,7 +19,7 @@ import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.constants.ElixirPermission
 import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
-import dev.racci.elixir.core.data.ElixirPlayer
+import dev.racci.elixir.api.data.ElixirPlayer
 import dev.racci.elixir.core.modules.OpalsModule
 import dev.racci.elixir.core.modules.OpalsModule.format
 import dev.racci.minix.api.annotations.MappedExtension

@@ -32,7 +32,7 @@ public class Elixir : MinixPlugin() {
         if (tentaclesInstalled) {
             val multiToolKey = NamespacedKey(this, "multi-tool")
             Tentacles.addGlobalBlockDropCondition(multiToolKey) { player, state, itemStack ->
-                if (itemStack.isEmpty || !itemStack.pdc.has(multiToolKey)) return@addGlobalBlockDropCondition null
+                if (itemStack.isEmpty || !itemStack!!.pdc.has(multiToolKey)) return@addGlobalBlockDropCondition null
                 true
             }
         }

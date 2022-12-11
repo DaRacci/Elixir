@@ -9,7 +9,7 @@ import dev.esophose.playerparticles.manager.ParticleStyleManager
 import dev.esophose.playerparticles.particles.ParticleEffect
 import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
-import dev.racci.elixir.core.data.ElixirPlayer
+import dev.racci.elixir.api.data.ElixirPlayer
 import dev.racci.elixir.core.extensions.mask
 import dev.racci.elixir.core.extensions.toVec
 import dev.racci.elixir.core.services.ElixirStorageService
@@ -51,7 +51,6 @@ import org.incendo.interfaces.paper.PlayerViewer
 import org.incendo.interfaces.paper.element.ItemStackElement
 import org.incendo.interfaces.paper.pane.ChestPane
 import org.koin.core.component.get
-import java.awt.SystemColor.menu
 import kotlin.time.Duration.Companion.seconds
 
 private interface ShopItem {
