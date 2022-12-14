@@ -1,13 +1,22 @@
 package dev.racci.elixir.core.modules
 
+import cloud.commandframework.kotlin.extension.buildAndRegister
+import cloud.commandframework.minecraft.extras.RichDescription
+import cloud.commandframework.paper.PaperCommandManager
+import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.constants.ElixirPermission
 import dev.racci.elixir.core.data.ElixirConfig
+import dev.racci.elixir.core.extensions.playerFlag
+import dev.racci.elixir.core.extensions.targetElseSender
 import dev.racci.minix.api.events.player.PlayerMoveXYZEvent
+import dev.racci.minix.api.extensions.KListener
 import dev.racci.minix.api.extensions.cancel
 import dev.racci.minix.api.extensions.event
 import dev.racci.minix.api.extensions.events
 import dev.racci.minix.api.extensions.hasPermissionOrStar
+import dev.racci.minix.api.extensions.world
 import org.bukkit.World
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
@@ -21,10 +30,20 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
 public object AetherModule : ModuleActor<ElixirConfig.Modules.Aether>() {
-    override suspend fun load() {
-        event(EventPriority.HIGHEST, true, block = ::handleVoid)
+    private lateinit var aetherWorld: World
 
-        events(
+    override suspend fun shouldLoad(): Boolean {
+        return super.shouldLoad() && world(getConfig().worldName) != null
+    }
+
+    override suspend fun load() {
+        aetherWorld = world(getConfig().worldName)!!
+    }
+
+    override suspend fun registerListeners(listener: KListener<Elixir>) {
+        listener.event(EventPriority.HIGHEST, true, block = ::handleVoid)
+
+        listener.events(
             PlayerJoinEvent::class,
             PlayerQuitEvent::class,
             PlayerChangedWorldEvent::class,
@@ -33,13 +52,27 @@ public object AetherModule : ModuleActor<ElixirConfig.Modules.Aether>() {
             block = ::handlePotions
         )
 
-        events(
+        listener.events(
             BlockBreakEvent::class,
             BlockPlaceEvent::class,
             priority = EventPriority.HIGHEST,
             ignoreCancelled = true,
             block = ::handleBlockMutate
         )
+    }
+
+    override suspend fun registerCommands(manager: PaperCommandManager<CommandSender>) {
+        manager.buildAndRegister(
+            "aether",
+            RichDescription.empty(),
+            emptyArray()
+        ) {
+            permission(modulePermission)
+            registerCopy("teleport") {
+                playerFlag()
+                handler { ctx -> ctx.targetElseSender().teleport(aetherWorld.spawnLocation) }
+            }
+        }
     }
 
     private fun <T : Event> handlePotions(event: T) {

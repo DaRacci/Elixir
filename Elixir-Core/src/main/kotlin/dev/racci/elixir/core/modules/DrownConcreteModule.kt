@@ -1,7 +1,9 @@
 package dev.racci.elixir.core.modules
 
 import com.destroystokyo.paper.MaterialTags
+import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.data.ElixirConfig
+import dev.racci.minix.api.extensions.KListener
 import dev.racci.minix.api.extensions.collections.findKProperty
 import dev.racci.minix.api.extensions.event
 import dev.racci.minix.api.extensions.reflection.accessGet
@@ -21,8 +23,8 @@ import kotlin.reflect.full.declaredMemberProperties
 
 public object DrownConcreteModule : ModuleActor<ElixirConfig.Modules.DrownConcrete>() {
 
-    override suspend fun load() {
-        event(EventPriority.HIGH, ignoreCancelled = true, forceAsync = true, ::handleDrown)
+    override suspend fun registerListeners(listener: KListener<Elixir>) {
+        listener.event(EventPriority.MONITOR, ignoreCancelled = true, forceAsync = true, ::handleDrown)
     }
 
     private suspend inline fun handleDrown(event: PlayerDropItemEvent) {

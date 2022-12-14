@@ -1,7 +1,9 @@
 package dev.racci.elixir.core.modules
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
+import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.data.ElixirConfig
+import dev.racci.minix.api.extensions.KListener
 import dev.racci.minix.api.extensions.cancel
 import dev.racci.minix.api.extensions.event
 import dev.racci.minix.api.extensions.events
@@ -23,8 +25,8 @@ import org.bukkit.potion.PotionEffectType
 public object HubModule : ModuleActor<ElixirConfig.Modules.Hub>() {
     private val hubKey = "elixir:hub_modifier".toNamespacedKey()
 
-    override suspend fun load() {
-        events(
+    override suspend fun registerListeners(listener: KListener<Elixir>) {
+        listener.events(
             PlayerJoinEvent::class,
             PlayerPostRespawnEvent::class,
             priority = EventPriority.HIGHEST
@@ -34,7 +36,7 @@ public object HubModule : ModuleActor<ElixirConfig.Modules.Hub>() {
             contaminatePlayer(this.player)
         }
 
-        event<PlayerChangedWorldEvent>(EventPriority.HIGHEST, true) {
+        listener.event<PlayerChangedWorldEvent>(EventPriority.HIGHEST, true) {
             val worlds = getConfig().worlds
             val fromIsHub = this.from.name in worlds
             val toIsHub = this.player.world.name in worlds
@@ -46,7 +48,7 @@ public object HubModule : ModuleActor<ElixirConfig.Modules.Hub>() {
             }
         }
 
-        event<EntityPotionEffectEvent>(EventPriority.HIGHEST, true) {
+        listener.event<EntityPotionEffectEvent>(EventPriority.HIGHEST, true) {
             if (entityType !== EntityType.PLAYER) return@event
             if (!withinHub(this.entity.castOrThrow())) return@event
             if (oldEffect == null && newEffect?.key == hubKey) return@event
@@ -58,7 +60,7 @@ public object HubModule : ModuleActor<ElixirConfig.Modules.Hub>() {
             }
         }
 
-        event<FoodLevelChangeEvent>(EventPriority.HIGHEST, true) {
+        listener.event<FoodLevelChangeEvent>(EventPriority.HIGHEST, true) {
             if (this.entityType !== EntityType.PLAYER || !withinHub(this.entity.castOrThrow())) return@event
             cancel()
         }

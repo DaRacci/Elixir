@@ -1,6 +1,8 @@
 package dev.racci.elixir.core.modules
 
+import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.data.ElixirConfig
+import dev.racci.minix.api.extensions.KListener
 import dev.racci.minix.api.extensions.cancel
 import dev.racci.minix.api.extensions.event
 import dev.racci.minix.api.extensions.scheduler
@@ -21,16 +23,18 @@ import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-public object TPSFixerModule : ModuleActor<ElixirConfig.Modules.TPSFixer>() {
+public object TPSFixerModule : ExperimentalActor<ElixirConfig.Modules.TPSFixer>() {
     private var spawnRate = 1.0f
     private var spawnRateTask = -1
 
     override suspend fun load() {
         this.startTPSPoller()
+    }
 
+    override suspend fun registerListeners(listener: KListener<Elixir>) {
         // TODO -> breaks itemsadders stuff
         // TODO -> breaks spawn eggs
-        event<EntitySpawnEvent> {
+        listener.event<EntitySpawnEvent> {
             if (Random.nextFloat() > spawnRate) return@event cancel()
 
             val keepBelow = getConfig().mutateSpawnRate[entity.type] ?: return@event

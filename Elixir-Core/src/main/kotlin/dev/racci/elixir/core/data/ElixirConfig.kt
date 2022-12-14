@@ -15,6 +15,8 @@ import org.spongepowered.configurate.objectmapping.meta.Required
 @MappedConfig(Elixir::class, "elixir.conf")
 public class ElixirConfig : MinixConfig<Elixir>(true) {
 
+    public val enableExperimentalFeatures: Boolean = false
+
     public val modules: Modules = Modules()
     public val guiButtons: GUI = GUI()
 

@@ -1,8 +1,10 @@
 package dev.racci.elixir.core.modules
 
 import de.codingair.tradesystem.spigot.TradeSystem
+import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
+import dev.racci.minix.api.extensions.KListener
 import dev.racci.minix.api.extensions.cancel
 import dev.racci.minix.api.extensions.event
 import dev.racci.minix.api.extensions.message
@@ -30,15 +32,15 @@ import org.koin.core.component.get
 public object EggTrackerModule : ModuleActor<ElixirConfig.Modules.EggTracker>() {
     private var dropEgg: Boolean = false
 
-    override suspend fun load() {
-        event<PlayerDropItemEvent>(EventPriority.LOWEST) {
+    override suspend fun registerListeners(listener: KListener<Elixir>) {
+        listener.event<PlayerDropItemEvent>(EventPriority.LOWEST) {
             if (!isDragonEgg(this.itemDrop.itemStack)) return@event
 
             cancel()
             get<ElixirLang>().eggTracker.cannotDrop message this.player
         }
 
-        event<InventoryClickEvent>(EventPriority.LOWEST) {
+        listener.event<InventoryClickEvent>(EventPriority.LOWEST) {
             if (!isDragonEgg(this.currentItem, this.cursor)) return@event
             if (isTrade(this.whoClicked)) return@event
 
@@ -48,17 +50,17 @@ public object EggTrackerModule : ModuleActor<ElixirConfig.Modules.EggTracker>() 
             }
         }
 
-        event<InventoryDragEvent>(EventPriority.LOWEST) {
+        listener.event<InventoryDragEvent>(EventPriority.LOWEST) {
             if (!isDragonEgg(this.cursor, this.oldCursor)) return@event
             if (isTrade(this.whoClicked)) return@event
             if (this.rawSlots.any { it <= this.inventory.size }) cancel() // Blocks any slots which is within the open inventory since the players raw slots are above the inventory size.
         }
 
-        event<BlockPlaceEvent>(EventPriority.LOWEST) {
+        listener.event<BlockPlaceEvent>(EventPriority.LOWEST) {
             if (isDragonEgg(this.itemInHand)) cancel()
         }
 
-        event<ItemDespawnEvent>(EventPriority.LOWEST) {
+        listener.event<ItemDespawnEvent>(EventPriority.LOWEST) {
             if (!isDragonEgg(this.entity.itemStack)) return@event
             get<ElixirLang>().eggTracker.despawned.get() message server
 
@@ -66,7 +68,7 @@ public object EggTrackerModule : ModuleActor<ElixirConfig.Modules.EggTracker>() 
             end.enderDragonBattle!!.initiateRespawn()
         }
 
-        event<DragonEggFormEvent>(EventPriority.HIGHEST) {
+        listener.event<DragonEggFormEvent>(EventPriority.HIGHEST) {
             if (dropEgg) {
                 isCancelled = false
                 dropEgg = false

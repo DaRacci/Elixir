@@ -1,6 +1,8 @@
 package dev.racci.elixir.core.modules
 
+import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.data.ElixirConfig
+import dev.racci.minix.api.extensions.KListener
 import dev.racci.minix.api.extensions.cancel
 import dev.racci.minix.api.extensions.event
 import dev.racci.minix.api.integrations.regions.RegionManager
@@ -12,13 +14,13 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 
 public object TerixModule : ModuleActor<ElixirConfig.Modules.Terix>() {
-    override suspend fun load() {
-        event<EntityAirChangeEvent>(EventPriority.HIGHEST, true) {
+    override suspend fun registerListeners(listener: KListener<Elixir>) {
+        listener.event<EntityAirChangeEvent>(EventPriority.HIGHEST, true) {
             (this.entity as? LivingEntity)?.ifWithinProtectedRegion(this::cancel)
         }
 
-        event<PlayerTeleportEvent>(EventPriority.MONITOR, true) { this.player.maybeResetAir() }
-        event<PlayerJoinEvent>(EventPriority.MONITOR, true) { this.player.maybeResetAir() }
+        listener.event<PlayerTeleportEvent>(EventPriority.MONITOR, true) { this.player.maybeResetAir() }
+        listener.event<PlayerJoinEvent>(EventPriority.MONITOR, true) { this.player.maybeResetAir() }
     }
 
     private fun LivingEntity.ifWithinProtectedRegion(action: () -> Unit) {

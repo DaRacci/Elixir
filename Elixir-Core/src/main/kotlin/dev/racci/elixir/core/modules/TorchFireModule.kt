@@ -1,6 +1,8 @@
 package dev.racci.elixir.core.modules
 
+import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.data.ElixirConfig
+import dev.racci.minix.api.extensions.KListener
 import dev.racci.minix.api.extensions.event
 import kotlinx.collections.immutable.persistentListOf
 import org.bukkit.Material
@@ -16,19 +18,17 @@ public object TorchFireModule : ModuleActor<ElixirConfig.Modules.TorchFire>() {
         )
     }
 
-    override suspend fun load() {
-        event(EventPriority.HIGH, true, block = ::handleAttack)
-    }
+    override suspend fun registerListeners(listener: KListener<Elixir>) {
+        listener.event<EntityDamageByEntityEvent>(EventPriority.MONITOR, true) {
+            val config = getConfig()
+            val burnTicks = config.burnTicks
+            val attacker = damager as? LivingEntity
+            val target = entity as? LivingEntity
 
-    private fun handleAttack(event: EntityDamageByEntityEvent) {
-        val config = this.getConfig()
-        val burnTicks = config.burnTicks
-        val attacker = event.damager as? LivingEntity
-        val target = event.entity as? LivingEntity
+            if (attacker == null || target == null || target.isDead || attacker.equipment?.getItem(attacker.handRaised)?.type !in torches) return@event
+            if (target.fireTicks > burnTicks) return@event
 
-        if (attacker == null || target == null || target.isDead || attacker.equipment?.getItem(attacker.handRaised)?.type !in torches) return
-        if (target.fireTicks > burnTicks) return
-
-        target.fireTicks = burnTicks
+            target.fireTicks = burnTicks
+        }
     }
 }

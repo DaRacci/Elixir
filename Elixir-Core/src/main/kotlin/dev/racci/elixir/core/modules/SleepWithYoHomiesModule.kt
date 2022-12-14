@@ -1,6 +1,8 @@
 package dev.racci.elixir.core.modules
 
+import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.data.ElixirConfig
+import dev.racci.minix.api.extensions.KListener
 import dev.racci.minix.api.extensions.event
 import dev.racci.minix.api.extensions.scheduler
 import dev.racci.minix.api.extensions.ticks
@@ -11,8 +13,8 @@ import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.event.player.PlayerInteractEvent
 
 public object SleepWithYoHomiesModule : ModuleActor<ElixirConfig.Modules.SleepWithYoHomies>() {
-    override suspend fun load() {
-        event<PlayerInteractEvent>() {
+    override suspend fun registerListeners(listener: KListener<Elixir>) {
+        listener.event<PlayerInteractEvent>() {
             if (this.action == Action.RIGHT_CLICK_BLOCK && this.clickedBlock?.blockData is Bed) {
                 scheduler {
                     this.player.sleep(this.clickedBlock!!.location, true)
@@ -20,6 +22,6 @@ public object SleepWithYoHomiesModule : ModuleActor<ElixirConfig.Modules.SleepWi
             }
         }
 
-        event<PlayerBedEnterEvent>() { this.setUseBed(Event.Result.ALLOW) }
+        listener.event<PlayerBedEnterEvent>() { this.setUseBed(Event.Result.ALLOW) }
     }
 }

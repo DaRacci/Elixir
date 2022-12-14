@@ -49,7 +49,7 @@ import kotlin.jvm.optionals.getOrElse
 @MappedExtension(Elixir::class, "Command Service", [ElixirStorageService::class])
 public class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
     private val elixirLang by DataService.inject().inject<ElixirLang>()
-    private val manager = object : Closeable<PaperCommandManager<CommandSender>>() {
+    internal val manager = object : Closeable<PaperCommandManager<CommandSender>>() {
         override fun create(): PaperCommandManager<CommandSender> {
             val coordinator = AsynchronousCommandExecutionCoordinator
                 .newBuilder<CommandSender>()
