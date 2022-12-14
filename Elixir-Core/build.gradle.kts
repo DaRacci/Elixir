@@ -15,6 +15,7 @@ dependencies {
     compileOnly(libs.bundles.cloud.kotlin)
     compileOnly(libs.minecraft.api.eco)
     compileOnly(files("../lib/CMIAPI8.7.8.2.jar"))
+    compileOnly(files("../lib/StatTrackers v5.1.0.jar"))
     compileOnly("com.willfp:EcoBosses:8.110.1")
     compileOnly(libs.minecraft.interfaces.paper)
     compileOnly(libs.minecraft.interfaces.kotlin)

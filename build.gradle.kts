@@ -86,6 +86,7 @@ subprojects {
     apply<Dev_racci_minix_kotlinPlugin>()
     apply<Dev_racci_minix_purpurmcPlugin>()
     apply<Dev_racci_minix_nmsPlugin>()
+    apply(plugin = rootProject.libs.plugins.kotlin.serialization.get().pluginId)
 
     dependencies {
         compileOnly(rootProject.libs.bundles.kotlin)
