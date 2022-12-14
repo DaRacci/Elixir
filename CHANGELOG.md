@@ -2,6 +2,36 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v1.1.0](https://github.com/DaRacci/Elixir/compare/v1.0.0..v1.1.0) - 2022-12-14
+#### Bug Fixes
+- **(TerixModule)** ClassCastException - ([602889f](https://github.com/DaRacci/Elixir/commit/602889f8a2c8c8860294f7e14c7d07a79cce6fcf)) - [@DaRacci](https://github.com/DaRacci)
+- **(deps)** update dependency com.willfp:ecobosses to v8.110.1 - ([53864e3](https://github.com/DaRacci/Elixir/commit/53864e324a6668899b44dcfaae2adfe8384dd05f)) - renovate[bot]
+- **(deps)** update dependency dev.esophose:playerparticles to v8.3 - ([d90d4a0](https://github.com/DaRacci/Elixir/commit/d90d4a02cfddca6c685e49824bd89ed2122e615c)) - renovate[bot]
+- **(deps)** update dependency com.github.codingair:tradesystem to v3 - ([6e2e9c1](https://github.com/DaRacci/Elixir/commit/6e2e9c147acb419754de22578a109a2835ab814b)) - renovate[bot]
+- Actually commit the new module service - ([a730eab](https://github.com/DaRacci/Elixir/commit/a730eabdf73809680c58bff441afbb8150045d3b)) - [@DaRacci](https://github.com/DaRacci)
+- Reset players air when spawning and tping to protected region - ([2f4f195](https://github.com/DaRacci/Elixir/commit/2f4f1955aed194f6caf052f15047eb7511b688c3)) - [@DaRacci](https://github.com/DaRacci)
+- add soft depend on CMI - ([6288cc4](https://github.com/DaRacci/Elixir/commit/6288cc4dec01fe45070d681d598a50b468f69811)) - [@DaRacci](https://github.com/DaRacci)
+- post bump script - ([f717e74](https://github.com/DaRacci/Elixir/commit/f717e74e0f685cbb2aa431836ffba479f8c20d4a)) - [@DaRacci](https://github.com/DaRacci)
+#### Features
+- A working version of the challenge module - ([086c68d](https://github.com/DaRacci/Elixir/commit/086c68d004c7fa5e3c263310e78472a14ab77e8f)) - [@DaRacci](https://github.com/DaRacci)
+- Sleep with yo homies ;) - ([c572851](https://github.com/DaRacci/Elixir/commit/c57285138394ee9775f39dd6a90dac32b4c12149)) - [@DaRacci](https://github.com/DaRacci)
+- Beginning of challenges module - ([3e179df](https://github.com/DaRacci/Elixir/commit/3e179df025220d5307b06cd43e8d3dfc011a3eb9)) - [@DaRacci](https://github.com/DaRacci)
+- Tentacles API Usage for multitool concept - ([bd111f6](https://github.com/DaRacci/Elixir/commit/bd111f6548198df1449d6338a31e5398d26e66f9)) - [@DaRacci](https://github.com/DaRacci)
+#### Miscellaneous Chores
+- **(deps)** update dependency gradle to v7.6 - ([f511bcd](https://github.com/DaRacci/Elixir/commit/f511bcd3a92e54e8bec080d8d11714f8269f72e6)) - renovate[bot]
+- **(version)** v1.0.0 - ([936148f](https://github.com/DaRacci/Elixir/commit/936148f4401f3be05e6c300fc98ebcdcd395d191)) - [@DaRacci](https://github.com/DaRacci)
+- Gradle changes - ([f88cf32](https://github.com/DaRacci/Elixir/commit/f88cf3203d6b474b3c617382a3c87aff74057db9)) - [@DaRacci](https://github.com/DaRacci)
+- Update gitignore - ([e06d51d](https://github.com/DaRacci/Elixir/commit/e06d51d404d8fe3fede28e783d4f00cdc1b1a0f7)) - [@DaRacci](https://github.com/DaRacci)
+- WIP Serializers for challenge rewards - ([67d35a5](https://github.com/DaRacci/Elixir/commit/67d35a5b677cf58358b18607b516590f5d41a760)) - [@DaRacci](https://github.com/DaRacci)
+#### Refactoring
+- **(Opals)** Particle and style prices - ([32f7298](https://github.com/DaRacci/Elixir/commit/32f729822fcad9c714e3de0b3e68258c50f44220)) - [@DaRacci](https://github.com/DaRacci)
+- **(gradle)** Use libs - ([c55a071](https://github.com/DaRacci/Elixir/commit/c55a071c39712ed35617a840bca886bf795b1ca8)) - [@DaRacci](https://github.com/DaRacci)
+- Command lang - ([cf3750b](https://github.com/DaRacci/Elixir/commit/cf3750b006f701ad88775da2a8b919297f4bc477)) - [@DaRacci](https://github.com/DaRacci)
+- Module loading and management - ([e9a6ee2](https://github.com/DaRacci/Elixir/commit/e9a6ee27c4a31ec42b975c0c3a473643fe6fb9a5)) - [@DaRacci](https://github.com/DaRacci)
+- Explicit API Mode - ([a37de48](https://github.com/DaRacci/Elixir/commit/a37de484e4531a6dde5260583e27ab91617f2222)) - [@DaRacci](https://github.com/DaRacci)
+
+- - -
+
 ## [v1.0.0](https://github.com/DaRacci/Elixir/compare/v0.0.1..v1.0.0) - 2022-11-09
 #### Bug Fixes
 - **(ConnectionMessageModule)** Run a task in 250ms to await nickname changes - ([c1cb282](https://github.com/DaRacci/Elixir/commit/c1cb2824de2b713f482c02b7e57e5e9b9fa81314)) - [@DaRacci](https://github.com/DaRacci)
