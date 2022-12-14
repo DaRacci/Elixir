@@ -7,9 +7,9 @@ import com.willfp.eco.core.recipe.parts.EmptyTestableItem
 import dev.esophose.playerparticles.PlayerParticles
 import dev.esophose.playerparticles.manager.ParticleStyleManager
 import dev.esophose.playerparticles.particles.ParticleEffect
+import dev.racci.elixir.api.data.ElixirPlayer
 import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
-import dev.racci.elixir.api.data.ElixirPlayer
 import dev.racci.elixir.core.extensions.mask
 import dev.racci.elixir.core.extensions.toVec
 import dev.racci.elixir.core.services.ElixirStorageService
@@ -157,34 +157,37 @@ public object OpalsModule : ModuleActor<ElixirConfig.Modules.Opals>() {
                     }
                 }
 
+                val notAvailableYet = MiniMessage.miniMessage().deserialize("<red>Not available yet!")
+                val clickToOpen = MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Click to open</gradient>")
+
                 menuButton(4, 1, "particles", Material.BLAZE_POWDER) {
                     name = MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Particles</gradient>")
-                    lore = listOf(MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Click to open</gradient>"))
+                    lore = listOf(clickToOpen)
                 }
 
                 menuButton(5, 1, "pets", Material.BONE) {
                     name = MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Pets</gradient>")
-                    lore = listOf(MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Click to open</gradient>"))
+                    lore = listOf(notAvailableYet, clickToOpen)
                 }
 
                 menuButton(6, 1, "trails", Material.FEATHER) {
                     name = MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Trails</gradient>")
-                    lore = listOf(MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Click to open</gradient>"))
+                    lore = listOf(notAvailableYet, clickToOpen)
                 }
 
                 menuButton(2, 1, "mounts", Material.SADDLE) {
                     name = MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Mounts</gradient>")
-                    lore = listOf(MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Click to open</gradient>"))
+                    lore = listOf(notAvailableYet, clickToOpen)
                 }
 
                 menuButton(3, 1, "stat_tackers", Material.COMPASS) {
                     name = MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Stat Tackers</gradient>")
-                    lore = listOf(MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Click to open</gradient>"))
+                    lore = listOf(notAvailableYet, clickToOpen)
                 }
 
                 menuButton(4, 2, "styles", Material.SPECTRAL_ARROW) {
                     name = MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Particle Styles</gradient>")
-                    lore = listOf(MiniMessage.miniMessage().deserialize("<gradient:#ff0000:#ff00ff:#0000ff>Click to open</gradient>"))
+                    lore = listOf(clickToOpen)
                 }
             }
         }
@@ -203,13 +206,13 @@ public object OpalsModule : ModuleActor<ElixirConfig.Modules.Opals>() {
     }
 
     private fun particleShop(): Interface<*, PlayerViewer> {
-        val particles = ParticleEffect.values().filter(ParticleEffect::isEnabled).toMutableSet()
+        val particles = ParticleEffect.values().filter(ParticleEffect::isEnabled).filter(ParticleEffect::isSupported).toMutableSet()
         menus["particles"] = fuckedShop(
             particles,
             { "pp_${it.name}" },
             { effect ->
                 ElixirConfig.Modules.Opals.Menu.MenuElement().apply {
-                    this.price = 175
+                    this.price = 20
                     this.singleUse = true
                     this.command = "lp user <player> permission set playerparticles.effect.${effect.internalName} true"
                     this.display = "${effect.guiIconMaterial.name} name:\"<white>Particle: <gold>${effect.internalName}\""
@@ -223,7 +226,7 @@ public object OpalsModule : ModuleActor<ElixirConfig.Modules.Opals>() {
         val styles = PlayerParticles.getInstance().getManager(ParticleStyleManager::class.java).styles
         menus["styles"] = fuckedShop(styles, { "style_${it.name}" }, { style ->
             ElixirConfig.Modules.Opals.Menu.MenuElement().apply {
-                this.price = 250
+                this.price = 30
                 this.singleUse = true
                 this.command = "lp user <player> permission set playerparticles.style.${style.internalName} true"
                 this.display = "${style.guiIconMaterial.name} name:\"<white>Style: <gold>${style.internalName}\""
