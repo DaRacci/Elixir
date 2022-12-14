@@ -8,6 +8,8 @@ import cloud.commandframework.arguments.standard.StringArgument
 import cloud.commandframework.bukkit.parsers.PlayerArgument
 import cloud.commandframework.context.CommandContext
 import cloud.commandframework.exceptions.InvalidCommandSenderException
+import cloud.commandframework.exceptions.InvalidSyntaxException
+import cloud.commandframework.exceptions.NoPermissionException
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator
 import cloud.commandframework.kotlin.coroutines.extension.suspendingHandler
 import cloud.commandframework.kotlin.extension.buildAndRegister
@@ -15,18 +17,17 @@ import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler
 import cloud.commandframework.minecraft.extras.RichDescription
 import cloud.commandframework.paper.PaperCommandManager
 import cloud.commandframework.permission.OrPermission
+import dev.racci.elixir.api.data.ElixirPlayer
 import dev.racci.elixir.core.Elixir
 import dev.racci.elixir.core.constants.ElixirPermission
 import dev.racci.elixir.core.data.ElixirConfig
 import dev.racci.elixir.core.data.ElixirLang
-import dev.racci.elixir.api.data.ElixirPlayer
 import dev.racci.elixir.core.modules.OpalsModule
 import dev.racci.elixir.core.modules.OpalsModule.format
 import dev.racci.minix.api.annotations.MappedExtension
 import dev.racci.minix.api.extension.Extension
 import dev.racci.minix.api.extensions.message
 import dev.racci.minix.api.extensions.parse
-import dev.racci.minix.api.extensions.reflection.castOrThrow
 import dev.racci.minix.api.extensions.server
 import dev.racci.minix.api.services.DataService
 import dev.racci.minix.api.services.DataService.Companion.inject
@@ -60,13 +61,21 @@ public class CommandService(override val plugin: Elixir) : Extension<Elixir>() {
             val manager = PaperCommandManager.createNative(plugin, coordinator)
 
             MinecraftExceptionHandler<CommandSender>()
-                .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX) { _, e ->
-                    val exception = e.castOrThrow<InvalidCommandSenderException>()
-
-                    elixirLang.commands.invalidSyntax[
-                        "command" to { exception.currentChain.getOrNull(0)?.name ?: "unknown" },
-                        "args" to { exception.command?.arguments.orEmpty().joinToString(" ") { "<${it.name})>" } }
-                    ]
+                .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX) { _, err ->
+                    when (err) {
+                        is InvalidCommandSenderException -> elixirLang.commands.invalidSender[
+                            "sender" to { err.requiredSender.simpleName }
+                        ]
+                        is NoPermissionException -> elixirLang.commands.noPermission[
+                            "permission" to { err.missingPermission }
+                        ]
+                        is InvalidSyntaxException -> elixirLang.commands.invalidSyntax[
+                            "syntax" to { err.correctSyntax }
+                        ]
+                        else -> elixirLang.commands.executionError[
+                            "reason" to { err.message.toString() }
+                        ]
+                    }
                 }
                 .withHandler(MinecraftExceptionHandler.ExceptionType.COMMAND_EXECUTION) { _, e ->
                     logger.error(e) { "An error occurred while executing a command" }

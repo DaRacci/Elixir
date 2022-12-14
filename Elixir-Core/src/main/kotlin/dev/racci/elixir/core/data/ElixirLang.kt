@@ -47,10 +47,10 @@ public class ElixirLang : LangConfig<Elixir>() {
         public var opalsGet: PartialComponent = PartialComponent.of("<prefix:elixir><target> has <amount> opals!")
         public var opalsMutate: PartialComponent = PartialComponent.of("<prefix:elixir>Mutated <target> opals from <previous> to <new> opals!")
 
-        public var invalidSyntax: PartialComponent = PartialComponent.of("<red>Invalid syntax! <gold>/<command> <args>")
-        public var executionError: PartialComponent = PartialComponent.of("<red>An error occurred while executing this command!")
+        public var invalidSyntax: PartialComponent = PartialComponent.of("<red>Invalid syntax! <gold>/<syntax>")
+        public var executionError: PartialComponent = PartialComponent.of("<red>An error occurred while executing this command! (<reason>)")
         public var noPermission: PartialComponent = PartialComponent.of("<red>You do not have permission to execute this command! (<permission>)")
-        public var invalidSender: PartialComponent = PartialComponent.of("<red>You must be a player to execute this command!")
+        public var invalidSender: PartialComponent = PartialComponent.of("<red>You must be of type <sender> to execute this command!")
         public var invalidPlayer: PartialComponent = PartialComponent.of("<red>Couldn't find player <player>!")
         public var missingArgument: PartialComponent = PartialComponent.of("<red>Missing argument <arg>!")
 
