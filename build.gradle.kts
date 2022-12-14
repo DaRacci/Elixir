@@ -1,5 +1,7 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.Permission
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 // Workaround for (https://youtrack.jetbrains.com/issue/KTIJ-19369)
 @Suppress("DSL_SCOPE_VIOLATION")
@@ -7,8 +9,44 @@ plugins {
     alias(libs.plugins.minix.kotlin)
     alias(libs.plugins.minix.copyjar)
     alias(libs.plugins.minix.purpurmc)
+    alias(libs.plugins.minix.publication)
     alias(libs.plugins.minecraft.pluginYML)
     alias(libs.plugins.slimjar)
+}
+
+allprojects {
+    beforeEvaluate {
+        when (this) {
+            this.rootProject -> "root"
+            else -> this.name.toLowerCase()
+        }.also { strDir -> this.buildDir = this.rootProject.buildDir.resolve(strDir) }
+
+        configurations.maybeCreate("slim")
+
+        plugins.withId("kotlin-jvm") {
+            project.kotlinExtension.apply {
+                this.jvmToolchain(17)
+                this.explicitApi()
+            }
+        }
+
+        project.tasks.withType<KotlinCompile>().configureEach {
+            kotlinOptions {
+                languageVersion = KotlinVersion.CURRENT.toString().substringBeforeLast(".")
+                apiVersion = languageVersion
+                jvmTarget = "17"
+                useK2 = false // TODO -> Enable when stable enough
+            }
+        }
+    }
+
+    afterEvaluate {
+        configurations {
+            compileClasspath.get().extendsFrom(slim.orNull)
+            runtimeClasspath.get().extendsFrom(slim.orNull)
+            apiElements.get().extendsFrom(slim.orNull)
+        }
+    }
 }
 
 bukkit {
@@ -86,6 +124,7 @@ subprojects {
     apply<Dev_racci_minix_kotlinPlugin>()
     apply<Dev_racci_minix_purpurmcPlugin>()
     apply<Dev_racci_minix_nmsPlugin>()
+    apply(plugin = rootProject.libs.plugins.minix.publication.get().pluginId)
     apply(plugin = rootProject.libs.plugins.kotlin.serialization.get().pluginId)
 
     dependencies {

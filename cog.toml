@@ -1,23 +1,8 @@
 pre_bump_hooks = [
-    """
-        bash -c "if ! ./gradlew test --info; then exit 1; fi"
-    """,
-    "echo 'Bumping from v{{latest}} to v{{version}}!'",
+    "nu -c \"cog-scripts/src/pre-bump.nu {{latest}} {{version}}\"",
 ]
 post_bump_hooks = [
-    # Update the version in gradle properties and amend last commit
-    "sed -i 's/version=.*/version=v{{version}}/' ./gradle.properties",
-    "git add ./gradle.properties",
-    "git commit --amend -C HEAD",
-    # Push to github with new tag
-    "git push",
-    "git push origin v{{version}}",
-    # Trigger the docs workflow
-    "gh workflow run docs.yml",
-    # Publish to repo
-    "./gradlew clean publish -Pversion=\"v{{version}}\"",
-    # Update tags
-    "git fetch --tags origin",
+    "nu -c \"cog-scripts/src/post-bump.nu Elixir -r -p Elixir-API -p Elixir-Core {{latest}} {{version}} {{version+patch-SNAPSHOT}}\"",
 ]
 
 tag_prefix = "v"

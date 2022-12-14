@@ -7,10 +7,8 @@ repositories {
 
 dependencies {
     implementation(project(":Elixir-API"))
-    compileOnly(libs.bundles.exposed)
     compileOnly(libs.minecraft.minix)
     compileOnly(libs.minecraft.api.protoclLib)
-    compileOnly(libs.caffeine)
     compileOnly(libs.bundles.cloud)
     compileOnly(libs.bundles.cloud.kotlin)
     compileOnly(libs.minecraft.api.eco)
