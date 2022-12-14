@@ -1,19 +1,12 @@
 package dev.racci.elixir.core
 
+import com.fren_gor.ultimateAdvancementAPI.AdvancementMain
+import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI
 import com.willfp.eco.core.items.isEmpty
-import dev.racci.elixir.core.modules.AetherModule
-import dev.racci.elixir.core.modules.ConnectionMessageModule
-import dev.racci.elixir.core.modules.DrownConcreteModule
-import dev.racci.elixir.core.modules.EggTrackerModule
-import dev.racci.elixir.core.modules.EnhanceBeaconsModule
-import dev.racci.elixir.core.modules.HubModule
-import dev.racci.elixir.core.modules.OpalsModule
-import dev.racci.elixir.core.modules.TPSFixerModule
-import dev.racci.elixir.core.modules.TerixModule
-import dev.racci.elixir.core.modules.TorchFireModule
 import dev.racci.minix.api.annotations.MappedPlugin
 import dev.racci.minix.api.extensions.pdc
 import dev.racci.minix.api.plugin.MinixPlugin
+import dev.racci.minix.api.utils.loadModule
 import dev.racci.tentacles.Tentacles
 import me.angeschossen.lands.api.exceptions.FlagConflictException
 import me.angeschossen.lands.api.flags.Flag
@@ -23,11 +16,14 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 import org.incendo.interfaces.paper.PaperInterfaceListeners
+import org.koin.core.component.get
+import org.koin.dsl.bind
 
 @MappedPlugin(-1, Elixir::class)
 public class Elixir : MinixPlugin() {
     override suspend fun handleLoad() {
         this.registerLandsFlag()
+        loadModule { single { AdvancementMain(this@Elixir).also(AdvancementMain::load) } bind AdvancementMain::class }
 
         if (tentaclesInstalled) {
             val multiToolKey = NamespacedKey(this, "multi-tool")
@@ -40,17 +36,12 @@ public class Elixir : MinixPlugin() {
 
     override suspend fun handleEnable() {
         PaperInterfaceListeners.install(this)
+        get<AdvancementMain>().enableInMemory()
+        loadModule { single { UltimateAdvancementAPI.getInstance(this@Elixir) } bind UltimateAdvancementAPI::class }
+    }
 
-        AetherModule.tryLoad()
-        EnhanceBeaconsModule.tryLoad()
-        DrownConcreteModule.tryLoad()
-        TorchFireModule.tryLoad()
-        ConnectionMessageModule.tryLoad()
-        TPSFixerModule.tryLoad()
-        OpalsModule.tryLoad()
-        EggTrackerModule.tryLoad()
-        HubModule.tryLoad()
-        TerixModule.tryLoad()
+    override suspend fun handleDisable() {
+        get<AdvancementMain>().disable()
     }
 
     private fun registerLandsFlag() {

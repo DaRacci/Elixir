@@ -1,7 +1,9 @@
 package dev.racci.elixir.api.data
 
+import dev.racci.minix.api.extensions.onlinePlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import org.bukkit.entity.Player
 import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.exposed.dao.UUIDEntity
 import org.jetbrains.exposed.dao.UUIDEntityClass
@@ -10,7 +12,7 @@ import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.Column
 import java.util.UUID
 
-public class ElixirPlayer private constructor(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
+public class ElixirPlayer(uuid: EntityID<UUID>) : UUIDEntity(uuid) {
     public companion object : UUIDEntityClass<ElixirPlayer>(ElixirPlayers)
 
     private var _joinMessage by ElixirPlayers.joinMessage
@@ -33,7 +35,9 @@ public class ElixirPlayer private constructor(uuid: EntityID<UUID>) : UUIDEntity
 
     public var opals: Int by ElixirPlayers.opals
 
-    public val purchases: MutableMap<String, Int> by lazy(ElixirPlayer::PurchaseMap)
+    public val purchases: MutableMap<String, Int> by lazy(::PurchaseMap)
+
+    public fun player(): Player = onlinePlayer(id.value) ?: error("Player is not online")
 
     public inner class PurchaseMap : MutableMap<String, Int> by (
         _purchases.split(",")

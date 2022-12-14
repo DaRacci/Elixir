@@ -62,7 +62,9 @@ public class ElixirConfig : MinixConfig<Elixir>(true) {
         var eggTracker: EggTracker = EggTracker(),
         @Comment("Settings for handling hub worlds.")
         var hub: Hub = Hub(),
-        var terix: Terix = Terix()
+        var terix: Terix = Terix(),
+        var sleepWithYoHomies: SleepWithYoHomies = SleepWithYoHomies(),
+        var challenge: ResourceChallenge = ResourceChallenge()
     ) : PropertyFinder<Modules.ModuleConfig>(KeyMode.CAPITALISED) {
 
         @ConfigSerializable

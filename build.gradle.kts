@@ -55,6 +55,7 @@ dependencies {
     implementation(project(":Elixir-Core"))
     implementation(libs.minecraft.interfaces.paper)
     implementation(libs.minecraft.interfaces.kotlin)
+    slim("com.frengor:ultimateadvancementapi-shadeable:2.2.1")
 }
 
 tasks {
@@ -67,6 +68,17 @@ tasks {
 
     build {
         finalizedBy(copyJar)
+    }
+}
+
+allprojects {
+    repositories {
+        maven("https://nexus.frengor.com/repository/public/") {
+            mavenContent {
+                releasesOnly()
+                includeGroup("com.frengor")
+            }
+        }
     }
 }
 
@@ -84,6 +96,7 @@ subprojects {
 
         compileOnly(rootProject.libs.minecraft.minix)
         compileOnly(rootProject.libs.minecraft.minix.core)
+        compileOnly("com.frengor:ultimateadvancementapi-shadeable:2.2.1")
     }
 
     kotlin.explicitApi()
