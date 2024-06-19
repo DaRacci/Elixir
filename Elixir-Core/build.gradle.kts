@@ -17,7 +17,7 @@ dependencies {
     compileOnly("com.willfp:EcoBosses:8.110.1")
     compileOnly(libs.minecraft.interfaces.paper)
     compileOnly(libs.minecraft.interfaces.kotlin)
-    compileOnly("dev.esophose:playerparticles:8.3")
+    compileOnly("dev.esophose:playerparticles:8.6")
     compileOnly("com.github.CodingAir:TradeSystem:3.1.2")
     compileOnly("dev.racci:Terix:1.1.1-SNAPSHOT")
 }
