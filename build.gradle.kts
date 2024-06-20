@@ -93,7 +93,7 @@ dependencies {
     implementation(project(":Elixir-Core"))
     implementation(libs.minecraft.interfaces.paper)
     implementation(libs.minecraft.interfaces.kotlin)
-    slim("com.frengor:ultimateadvancementapi-shadeable:2.2.1")
+    slim("com.frengor:ultimateadvancementapi-shadeable:2.4.0")
 }
 
 tasks {
@@ -136,7 +136,7 @@ subprojects {
 
         compileOnly(rootProject.libs.minecraft.minix)
         compileOnly(rootProject.libs.minecraft.minix.core)
-        compileOnly("com.frengor:ultimateadvancementapi-shadeable:2.2.1")
+        compileOnly("com.frengor:ultimateadvancementapi-shadeable:2.4.0")
     }
 
     kotlin.explicitApi()
