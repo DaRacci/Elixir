@@ -14,7 +14,7 @@ dependencies {
     compileOnly(libs.minecraft.api.eco)
     compileOnly(files("../lib/CMIAPI8.7.8.2.jar"))
     compileOnly(files("../lib/StatTrackers v5.1.0.jar"))
-    compileOnly("com.willfp:EcoBosses:8.110.1")
+    compileOnly("com.willfp:EcoBosses:8.113.1")
     compileOnly(libs.minecraft.interfaces.paper)
     compileOnly(libs.minecraft.interfaces.kotlin)
     compileOnly("dev.esophose:playerparticles:8.3")
